@@ -5,10 +5,15 @@ import (
 	"github.com/jmcvetta/napping"
 )
 
+
+// Tester represents an ordinary RESTful entry point
 type Tester struct {
 	BaseUrl string
 }
 
+
+// Test to create a record with the payload provided.
+// Expects the response to carry a valid record the newly created record.
 func (t *Tester) TestCreate(
 	payload interface{}, result TestRespond) (resp *napping.Response, err error) {
 
@@ -38,6 +43,10 @@ func (t *Tester) TestCreate(
 	return
 }
 
+
+// Test to retrieve 1 record. Then try to match the record with
+// the NthMatches interface method
+// Expects the response to carry 1 and only 1 valid record
 func (t *Tester) TestRetrieveOne(
 	id string, payload interface{}, result TestRespond) (resp *napping.Response, err error) {
 
@@ -71,6 +80,9 @@ func (t *Tester) TestRetrieveOne(
 	return
 }
 
+
+// Test to update 1 record.
+// Expects the response to carry the newly updated record.
 func (t *Tester) TestUpdate(
 	id string, payload interface{}, result TestRespond) (resp *napping.Response, err error) {
 
@@ -103,6 +115,9 @@ func (t *Tester) TestUpdate(
 	return
 }
 
+
+// Test to delete 1 record.
+// Expects the response to carry the just deleted record.
 func (t *Tester) TestDelete(
 	id string, payload interface{}, result TestRespond) (resp *napping.Response, err error) {
 
