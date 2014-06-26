@@ -2,9 +2,9 @@ package restit
 
 // Response needed to fulfill this interface
 // in order to be tested by RESTit
-type TestRespond interface {
+type Respond interface {
 	Count() int
-	NthExists(int) error
 	NthValid(int) error
-	NthMatches(int, *interface{}) error
+	GetNth(int) (interface{}, error)
+	Match(interface{}, interface{}) error
 }

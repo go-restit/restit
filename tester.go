@@ -1,151 +1,85 @@
 package restit
 
 import (
-	"fmt"
 	"github.com/jmcvetta/napping"
 )
 
+// Create a tester for an API entry point
+// name    string human-readable name of the entry point
+// baseUrl string RESTful API base url
+func Rest(name string, url string) *Tester {
+	t := Tester{
+		Name: name,
+		Url:  url,
+	}
+	return &t
+}
 
 // Tester represents an ordinary RESTful entry point
 type Tester struct {
-	BaseUrl string
+	Name string
+	Url  string
 }
 
-
-// Test to create a record with the payload provided.
-// Expects the response to carry a valid record the newly created record.
-func (t *Tester) TestCreate(
-	payload interface{}, result TestRespond) (resp *napping.Response, err error) {
-
-	// make the REST create request
-	resp, err = napping.Post(t.BaseUrl,
-		&payload, &result, nil)
-
-	// test: has to be exactly 1 result
-	count := result.Count()
-	if count != 1 {
-		err = fmt.Errorf("Bad response in TestCreate. "+
-			"There are %d results (expecting 1)",
-			count)
-		return
+// Create Case to Create something with the payload
+func (t *Tester) Create(payload interface{}) *Case {
+	s := napping.Session{}
+	r := napping.Request{
+		Method:  "POST",
+		Url:     t.Url,
+		Payload: payload,
 	}
-
-	// test: test the result
-	err = result.NthValid(0)
-	if err != nil {
-		return
+	c := Case{
+		Request: &r,
+		Session: &s,
+		Tester:  t,
 	}
-	err = result.NthMatches(0, &payload)
-	if err != nil {
-		return
-	}
-
-	return
+	return &c
 }
 
-
-// Test to retrieve 1 record. Then try to match the record with
-// the NthMatches interface method
-// Expects the response to carry 1 and only 1 valid record
-func (t *Tester) TestRetrieveOne(
-	id string, payload interface{}, result TestRespond) (resp *napping.Response, err error) {
-
-	// REST retrieve record with id
-	p := napping.Params{} // empty payload for retrieve
-	resp, err = napping.Get(t.BaseUrl+"/"+id,
-		&p, &result, nil)
-	if err != nil {
-		return
+// Create Case to Retrieve something with the id string
+func (t *Tester) Retrieve(id string) *Case {
+	s := napping.Session{}
+	r := napping.Request{
+		Method: "GET",
+		Url:    t.Url + id,
 	}
-
-	// test: has to be exactly 1 result
-	count := result.Count()
-	if count != 1 {
-		err = fmt.Errorf("Bad response in TestRetrieveOne. "+
-			"There are %d results (expecting 1)",
-			count)
-		return
+	c := Case{
+		Request: &r,
+		Session: &s,
+		Tester:  t,
 	}
-
-	// test: test the result
-	err = result.NthValid(0)
-	if err != nil {
-		return
-	}
-	err = result.NthMatches(0, &payload)
-	if err != nil {
-		return
-	}
-
-	return
+	return &c
 }
 
-
-// Test to update 1 record.
-// Expects the response to carry the newly updated record.
-func (t *Tester) TestUpdate(
-	id string, payload interface{}, result TestRespond) (resp *napping.Response, err error) {
-
-	// REST update record (of given id) with the payload
-	resp, err = napping.Put(t.BaseUrl+"/"+id,
-		&payload, &result, nil)
-	if err != nil {
-		return
+// Create Case to Update something of the id with the payload
+func (t *Tester) Update(
+	id string, payload interface{}) *Case {
+	s := napping.Session{}
+	r := napping.Request{
+		Method:  "PUT",
+		Url:     t.Url + id,
+		Payload: payload,
 	}
-
-	// test: has to be exactly 1 result
-	count := result.Count()
-	if count != 1 {
-		err = fmt.Errorf("Bad response in TestUpdate. "+
-			"There are %d results (expecting 1)",
-			count)
-		return
+	c := Case{
+		Request: &r,
+		Session: &s,
+		Tester:  t,
 	}
-
-	// test: test the result
-	err = result.NthValid(0)
-	if err != nil {
-		return
-	}
-	err = result.NthMatches(0, &payload)
-	if err != nil {
-		return
-	}
-
-	return
+	return &c
 }
 
-
-// Test to delete 1 record.
-// Expects the response to carry the just deleted record.
-func (t *Tester) TestDelete(
-	id string, payload interface{}, result TestRespond) (resp *napping.Response, err error) {
-
-	// REST delete record of given id
-	resp, err = napping.Delete(t.BaseUrl+"/"+id,
-		&result, nil)
-	if err != nil {
-		return
+// Create Case to Delete something of the id
+func (t *Tester) Delete(id string) *Case {
+	s := napping.Session{}
+	r := napping.Request{
+		Method: "DELETE",
+		Url:    t.Url + id,
 	}
-
-	// test: has to be exactly 1 result
-	count := result.Count()
-	if count != 1 {
-		err = fmt.Errorf("Bad response in TestUpdate. "+
-			"There are %d results (expecting 1)",
-			count)
-		return
+	c := Case{
+		Request: &r,
+		Session: &s,
+		Tester:  t,
 	}
-
-	// test: test the result
-	err = result.NthValid(0)
-	if err != nil {
-		return
-	}
-	err = result.NthMatches(0, &payload)
-	if err != nil {
-		return
-	}
-
-	return
+	return &c
 }
