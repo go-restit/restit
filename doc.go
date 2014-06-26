@@ -5,10 +5,14 @@
 /*
 	Package RESTit provides helps to those who
 	want to write an integration test program
-	for their RESTful APIs.
+	for their JSON-based RESTful APIs.
+
+	The aim is to make these integration readable
+	highly re-usable, and yet easy to modify.
 
 	To use, you first have to implement the
-	`TestRespond` interface.
+	`TestRespond` interface for the REST server
+	response that you're expecting.
 
 	Example:
 
@@ -21,99 +25,141 @@
 			return len(r.Result)
 		}
 
-		func (r *ExmplResp) NthExists(n int) (err error) {
-			if n < 0 || n > r.Count() {
-				err = fmt.Errorf("Nth item (%d) not exist. Length = %d",
-					n, len(r.Result))
-			}
-			return
-		}
-
 		func (r *ExmplResp) NthValid(n int) (err error) {
-
-			// check if the item exists
-			err = r.NthExists(n)
-			if err != nil {
-				return
-			}
-
-			// test: the id should not be 0
+			// some test to see nth record is valid
+			// such as:
 			if r.Result[n].StuffId == 0 {
 				return fmt.Errorf("The thing has a StuffId = 0")
 			}
-
 			return
 		}
 
-		func (r *ExmplResp) NthMatches(n int, comp *interface{}) (err error) {
-
-			// check if the item exists
-			err = r.NthExists(n)
-			if err != nil {
-				return
-			}
-
-			// check if the item match the payload
-			stuff := r.Result[n]
-			cptr := (*comp).(*map[string]string)
-			c := *cptr
-			if stuff.Name != c["name"] {
-				err = fmt.Errorf("Name is \"%s\" (expected \"%s\")",
-				stuff.Name, c["name"])
-				return
-			}
-
-			return
+		func (r *ExmplResp) GetNth(n int) (item interface{}, err error) {
+			// return the nth item
+			return Result[n]
 		}
 
-	Then you can test your RESTful API like this:
+		func (r *ExmplResp) Match(a interface{}, b interface{}) (match bool, err error) {
 
-			// create a tester for your stuff
-			tester := restit.Tester{
-				BaseUrl: "http://foobar:8080/api/stuffs",
-			}
+			// cast a and b back to Stuff
+			real_a = a.(Stuff)
+			real_b = b.(Stuff)
+
+			// some test to check if real_a equals real_b
+			// ...
+		}
+
+	You can then test your RESTful API like this:
+
+		import "github.com/yookoala/restit"
+
+		// create a tester for your stuff
+		// first parameter is a human readable name that will appear on error
+		// second parameter is the base URL to the API entry point
+		stuff := restit.CreateTester("Stuff", "http://foobar:8080/api/stuffs")
+
+		// some parameters we'll use
+		var result restit.TestResult
+		var test restit.TestCase
+		var response ExmplResp
+
+		// some random stuff for test
+		// for example,
+		stuffToCreate = Stuff{
+			Name: "apple",
+			Color: "red",
+		}
+		stuffToUpdate = Stuff{
+			Name: "orange",
+			Color: "orange",
+		}
+
+		// here we add some dummy security measures
+		// or you may add any parameters you like
+		securityInfo := map[string]interface{}{
+			"username": "valid_user",
+			"token": "some_security_token",
+		})
 
 
-			// -------- Test Create --------
-			// 1. create the stuff
-			resp, err = tester.TestCreate(&stuffToCreate, &result)
-			if err != nil {
-				fmt.Printf("Raw: %s\n", resp.RawText())
-				panic(err)
-			}
-			stuffId := result.Result[0].StuffId // id of the created stuff
+		// -------- Test Create --------
+		// 1. create the stuff
+		test = stuff.
+			TestCreate(&stuffToCreate).
+			WithQueryString(securityInfo).
+			WithResponseAs(&response).
+			ExpectResultCount(1).
+			ExpectResultsValid().
+			ExpectResultNth(0, &stuffToCreate).
+			ExpectResultToPass(func (s interface{}) error {
+				// some custom test you may want to run
+				// ...
+			})
 
-			// 2. test the created stuff
-			_, err = tester.TestRetrieveOne(fmt.Sprintf("%d", stuffId), &stuffToCreate, &result)
-			if err != nil {
-				fmt.Printf("Raw: %s\n", resp.RawText())
-				panic(err)
-			}
+		result, err := test.Run()
+		if err != nil {
+			// you may add more verbose output for inspection
+			fmt.Printf("Failed creating stuff!!!!\n")
+			fmt.Printf("Please inspect the Raw Response: " + result.RawText())
+
+			// or you can simply:
+			panic(err)
+		}
+
+		// id of the just created stuff
+		// for reference of later tests
+		stuffId := response.Result[0].StuffId
+		stuffToCreate.StuffId = stuffId
+		stuffToUpdate.StuffId = stuffId
+
+		// 2. test the created stuff
+		test = stuff.
+			TestRetrieve(fmt.Sprintf("%d", stuffId)).
+			WithResponseAs(&response).
+			ExpectResultCount(1).
+			ExpectResultsValid().
+			ExpectResultNth(0, &stuffToCreate)
+		result = test.RunOrPanic() // A short hand to just panic on any error
 
 
-			// -------- Test Update --------
-			// 1. update the stuff
-			resp, err = tester.TestUpdate(fmt.Sprintf("%d", stuffId), &stuffToUpdate, &result)
-			if err != nil {
-				fmt.Printf("Raw: %s\n", resp.RawText())
-				panic(err)
-			}
+		// -------- Test Update --------
+		// 1. update the stuff
+		result = stuff.
+			TestUpdate(&stuffToUpdate, fmt.Sprintf("%d", stuffId)).
+			WithResponseAs(&response).
+			WithQueryString(securityInfo).
+			ExpectResultCount(1).
+			ExpectResultsValid().
+			ExpectResultNth(0, &stuffToUpdate).
+			RunOrPanic() // Yes, you can be this lazy
 
-			// 2. test the updated stuff
-			_, err = tester.TestRetrieveOne(fmt.Sprintf("%d", stuffId), &stuffToUpdate, &result)
-			if err != nil {
-				fmt.Printf("Raw: %s\n", resp.RawText())
-				panic(err)
-			}
+		// 2. test the updated stuff
+		result = stuff.
+			TestRetrieve(fmt.Sprintf("%d", stuffId)).
+			WithResponseAs(&response).
+			ExpectResultCount(1).
+			ExpectResultsValid().
+			ExpectResultNth(0, &stuffToUpdate).
+			RunOrPanic()
 
 
-			// -------- Test Delete --------
-			// delete the stuff
-			_, err = tester.TestDelete(fmt.Sprintf("%d", stuffId), &stuffToUpdate, &result)
-			if err != nil {
-				fmt.Printf("Raw: %s\n", resp.RawText())
-				panic(err)
-			}
+		// -------- Test Delete --------
+		// delete the stuff
+		result = stuff.
+			TestDelete(fmt.Sprintf("%d", stuffId)).
+			WithResponseAs(&response).
+			WithQueryString(security).
+			ExpectResultCount(1).
+			ExpectResultsValid().
+			ExpectResultNth(0, &stuffToUpdate).
+			RunOrPanic()
+
+		// 2. test the deleted stuff
+		result = stuff.
+			TestRetrieve(fmt.Sprintf("%d", stuffId)).
+			WithResponseAs(&response).
+			ExpectResultStatus(404).
+			RunOrPanic()
 
 */
 package restit
