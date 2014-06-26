@@ -41,6 +41,12 @@ func (c *Case) RunOrPanic() (r *Result) {
 	return
 }
 
+// Set the result to the given interface{}
+func (c *Case) WithResponseAs(r interface{}) (*Case) {
+	c.Request.Result = r
+	return c
+}
+
 // Append Test to Expectations
 // Tests if the result count equal to n
 func (c *Case) ExpectResultCount(n int) (*Case) {
