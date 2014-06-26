@@ -70,13 +70,18 @@ func (c *Case) ExpectResultCount(n int) (*Case) {
 
 // Append Test to Expectations
 // Tests if the item is valid
-func (c *Case) ExpectResultsValid(n int) (*Case) {
+func (c *Case) ExpectResultsValid() (*Case) {
 	c.Expectations = append(c.Expectations, Expectation{
-		Desc: fmt.Sprintf("Expect #%d result valid", n),
+		Desc: "Expect all result valid",
 		Test: func(r *Response) (err error) {
 			for i:=0; i<(*r).Count(); i++ {
 				err = (*r).NthValid(i)
-				return
+				if err != nil {
+					err = fmt.Errorf(
+						"Item %d invalid: %s",
+						i, err.Error())
+					return
+				}
 			}
 			return
 		},
