@@ -15,7 +15,10 @@ type Case struct {
 // To actually run the test case
 func (c *Case) Run() (r *Result, err error) {
 	res, err := c.Session.Send(c.Request)
-	r.Response = res
+	result := Result {
+		Response: res,
+	}
+	r = &result
 
 	// test each expectations
 	resp := (*c).Request.Result.(Response)
