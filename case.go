@@ -108,9 +108,8 @@ func (c *Case) ExpectResultNth(n int, b interface{}) *Case {
 
 // Append Custom Test to Expectation
 // Allow user to inject user defined tests
-func (c *Case) ExpectResultToPass(
-	desc string,
-	test func(Response) error) *Case {
+func (c *Case) ExpectResultsToPass(
+	desc string, test func(Response) error) *Case {
 	c.Expectations = append(c.Expectations, Expectation{
 		Desc: desc,
 		Test: test,
