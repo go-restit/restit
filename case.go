@@ -15,7 +15,7 @@ type Case struct {
 // To actually run the test case
 func (c *Case) Run() (r *Result, err error) {
 	res, err := c.Session.Send(c.Request)
-	result := Result {
+	result := Result{
 		Response: res,
 	}
 	r = &result
@@ -23,7 +23,7 @@ func (c *Case) Run() (r *Result, err error) {
 	// test each expectations
 	resp := (*c).Request.Result.(Response)
 	for i := 0; i < len(c.Expectations); i++ {
-		err = c.Expectations[i].Test(&resp)
+		err = c.Expectations[i].Test(resp)
 		if err != nil {
 			err = fmt.Errorf("Failed in %s: %s",
 				c.Expectations[i].Desc,
@@ -45,19 +45,19 @@ func (c *Case) RunOrPanic() (r *Result) {
 }
 
 // Set the result to the given interface{}
-func (c *Case) WithResponseAs(r interface{}) (*Case) {
+func (c *Case) WithResponseAs(r interface{}) *Case {
 	c.Request.Result = r
 	return c
 }
 
 // Append Test to Expectations
 // Tests if the result count equal to n
-func (c *Case) ExpectResultCount(n int) (*Case) {
+func (c *Case) ExpectResultCount(n int) *Case {
 	c.Expectations = append(c.Expectations, Expectation{
 		Desc: "Expect Result Count",
-		Test: func(r *Response) (err error) {
-			count := (*r).Count()
-			if (count != n) {
+		Test: func(r Response) (err error) {
+			count := r.Count()
+			if count != n {
 				err = fmt.Errorf(
 					"Result count is %d (expected %d)",
 					count, n)
@@ -70,12 +70,12 @@ func (c *Case) ExpectResultCount(n int) (*Case) {
 
 // Append Test to Expectations
 // Tests if the item is valid
-func (c *Case) ExpectResultsValid() (*Case) {
+func (c *Case) ExpectResultsValid() *Case {
 	c.Expectations = append(c.Expectations, Expectation{
 		Desc: "Expect all result valid",
-		Test: func(r *Response) (err error) {
-			for i:=0; i<(*r).Count(); i++ {
-				err = (*r).NthValid(i)
+		Test: func(r Response) (err error) {
+			for i := 0; i < r.Count(); i++ {
+				err = r.NthValid(i)
 				if err != nil {
 					err = fmt.Errorf(
 						"Item %d invalid: %s",
@@ -91,15 +91,15 @@ func (c *Case) ExpectResultsValid() (*Case) {
 
 // Append Test to Expectation
 // Tests if the nth item matches the provided one
-func (c *Case) ExpectResultNth(n int, b interface{}) (*Case) {
+func (c *Case) ExpectResultNth(n int, b interface{}) *Case {
 	c.Expectations = append(c.Expectations, Expectation{
 		Desc: fmt.Sprintf("Expect #%d result valid", n),
-		Test: func(r *Response) (err error) {
-			a, err := (*r).GetNth(n)
+		Test: func(r Response) (err error) {
+			a, err := r.GetNth(n)
 			if err != nil {
 				return
 			}
-			err = (*r).Match(a, b)
+			err = r.Match(a, b)
 			return
 		},
 	})
@@ -110,7 +110,7 @@ func (c *Case) ExpectResultNth(n int, b interface{}) (*Case) {
 // Allow user to inject user defined tests
 func (c *Case) ExpectResultToPass(
 	desc string,
-	test func(*Response)(error)) (*Case) {
+	test func(Response) error) *Case {
 	c.Expectations = append(c.Expectations, Expectation{
 		Desc: desc,
 		Test: test,
@@ -119,9 +119,9 @@ func (c *Case) ExpectResultToPass(
 }
 
 // Expection to the response in a Case
-type Expectation struct{
+type Expectation struct {
 	Desc string
-	Test func(*Response) (error)
+	Test func(Response) error
 }
 
 // Test Result of a Case
