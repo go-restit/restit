@@ -2,8 +2,23 @@ package restit
 
 import (
 	"fmt"
+	"github.com/jmcvetta/napping"
 	"testing"
 )
+
+func Test_Case_WithParams(t *testing.T) {
+
+	r := napping.Request{}
+	c := Case{
+		Request: &r,
+	}
+	p := napping.Params{}
+	c.WithParams(&p)
+	if c.Request.Params != &p {
+		t.Error("WithParams failed to set the parameter")
+	}
+
+}
 
 func Test_Case_ExpectResultCount_0(t *testing.T) {
 

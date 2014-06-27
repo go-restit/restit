@@ -50,6 +50,12 @@ func (c *Case) WithResponseAs(r interface{}) *Case {
 	return c
 }
 
+// Set the query parameter
+func (c *Case) WithParams(p *napping.Params) *Case {
+	c.Request.Params = p
+	return c
+}
+
 // Append Test to Expectations
 // Tests if the result count equal to n
 func (c *Case) ExpectResultCount(n int) *Case {
