@@ -42,7 +42,7 @@ func (t *Tester) Retrieve(id string) *Case {
 	s := napping.Session{}
 	r := napping.Request{
 		Method: "GET",
-		Url:    t.Url + id,
+		Url:    t.Url + "/" + id,
 	}
 	c := Case{
 		Request: &r,
@@ -58,7 +58,7 @@ func (t *Tester) Update(
 	s := napping.Session{}
 	r := napping.Request{
 		Method:  "PUT",
-		Url:     t.Url + id,
+		Url:     t.Url + "/" + id,
 		Payload: payload,
 	}
 	c := Case{
@@ -74,7 +74,7 @@ func (t *Tester) Delete(id string) *Case {
 	s := napping.Session{}
 	r := napping.Request{
 		Method: "DELETE",
-		Url:    t.Url + id,
+		Url:    t.Url + "/" + id,
 	}
 	c := Case{
 		Request: &r,
