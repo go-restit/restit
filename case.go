@@ -25,7 +25,8 @@ func (c *Case) Run() (r *Result, err error) {
 	for i := 0; i < len(c.Expectations); i++ {
 		err = c.Expectations[i].Test(resp)
 		if err != nil {
-			err = fmt.Errorf("Failed in %s: %s",
+			err = fmt.Errorf("Failed in test: \"%s\" " +
+				"Reason: \"%s\"",
 				c.Expectations[i].Desc,
 				err.Error())
 			return
@@ -60,12 +61,13 @@ func (c *Case) WithParams(p *napping.Params) *Case {
 // Tests if the result count equal to n
 func (c *Case) ExpectResultCount(n int) *Case {
 	c.Expectations = append(c.Expectations, Expectation{
-		Desc: "Expect Result Count",
+		Desc: "Test Result Count",
 		Test: func(r Response) (err error) {
 			count := r.Count()
 			if count != n {
 				err = fmt.Errorf(
-					"Result count is %d (expected %d)",
+					"Result count is %d " +
+					"(expected %d)",
 					count, n)
 			}
 			return
@@ -78,7 +80,7 @@ func (c *Case) ExpectResultCount(n int) *Case {
 // Tests if the item is valid
 func (c *Case) ExpectResultsValid() *Case {
 	c.Expectations = append(c.Expectations, Expectation{
-		Desc: "Expect all result valid",
+		Desc: "Test Results Valid",
 		Test: func(r Response) (err error) {
 			for i := 0; i < r.Count(); i++ {
 				err = r.NthValid(i)
@@ -99,7 +101,7 @@ func (c *Case) ExpectResultsValid() *Case {
 // Tests if the nth item matches the provided one
 func (c *Case) ExpectResultNth(n int, b interface{}) *Case {
 	c.Expectations = append(c.Expectations, Expectation{
-		Desc: fmt.Sprintf("Expect #%d result valid", n),
+		Desc: fmt.Sprintf("Test #%d Result Valid", n),
 		Test: func(r Response) (err error) {
 			a, err := r.GetNth(n)
 			if err != nil {
