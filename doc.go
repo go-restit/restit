@@ -14,7 +14,11 @@
 	`TestRespond` interface for the REST server
 	response that you're expecting.
 
-	Example:
+	In Go, json contents are usually unmarshaled
+	to structs. What you need to do is implement
+	4 methods to the struct type.
+
+	For example:
 
 		type ExmplResp struct {
 			Status string  `json:"status"`
@@ -29,17 +33,21 @@
 			// some test to see nth record is valid
 			// such as:
 			if r.Result[n].StuffId == 0 {
-				return fmt.Errorf("The thing has a StuffId = 0")
+				return fmt.Errorf(
+					"StuffId should not be 0")
 			}
 			return
 		}
 
-		func (r *ExmplResp) GetNth(n int) (item interface{}, err error) {
+		func (r *ExmplResp) GetNth(n int) (item interface{},
+			err error) {
 			// return the nth item
 			return Result[n]
 		}
 
-		func (r *ExmplResp) Match(a interface{}, b interface{}) (match bool, err error) {
+		func (r *ExmplResp) Match(
+			a interface{}, b interface{}) (
+			match bool, err error) {
 
 			// cast a and b back to Stuff
 			real_a = a.(Stuff)
@@ -54,9 +62,11 @@
 		import "github.com/yookoala/restit"
 
 		// create a tester for your stuff
-		// first parameter is a human readable name that will appear on error
-		// second parameter is the base URL to the API entry point
-		stuff := restit.CreateTester("Stuff", "http://foobar:8080/api/stuffs")
+		// first parameter is a human readable name that will
+		// appear on error second parameter is the base URL to
+		// the API entry point
+		stuff := restit.CreateTester(
+			"Stuff", "http://foobar:8080/api/stuffs")
 
 		// some parameters we'll use
 		var result restit.TestResult
@@ -76,31 +86,35 @@
 
 		// here we add some dummy security measures
 		// or you may add any parameters you like
-		securityInfo := map[string]interface{}{
+		securityInfo := napping.Params{
 			"username": "valid_user",
 			"token": "some_security_token",
-		})
+		}
 
 
 		// -------- Test Create --------
 		// 1. create the stuff
 		test = stuff.
 			TestCreate(&stuffToCreate).
-			WithQueryString(securityInfo).
+			WithParams(&securityInfo).
 			WithResponseAs(&response).
 			ExpectResultCount(1).
 			ExpectResultsValid().
 			ExpectResultNth(0, &stuffToCreate).
-			ExpectResultToPass(func (s interface{}) error {
+			ExpectResultsToPass(
+				"Custom Test",
+				func (r Response) error {
 				// some custom test you may want to run
 				// ...
 			})
 
 		result, err := test.Run()
 		if err != nil {
-			// you may add more verbose output for inspection
+			// you may add more verbose output for
+			// inspection
 			fmt.Printf("Failed creating stuff!!!!\n")
-			fmt.Printf("Please inspect the Raw Response: " + result.RawText())
+			fmt.Printf("Please inspect the Raw Response: " 
+					+ result.RawText())
 
 			// or you can simply:
 			panic(err)
@@ -119,15 +133,17 @@
 			ExpectResultCount(1).
 			ExpectResultsValid().
 			ExpectResultNth(0, &stuffToCreate)
-		result = test.RunOrPanic() // A short hand to just panic on any error
+		// A short hand to just panic on any error
+		result = test.RunOrPanic()
 
 
 		// -------- Test Update --------
 		// 1. update the stuff
 		result = stuff.
-			TestUpdate(&stuffToUpdate, fmt.Sprintf("%d", stuffId)).
+			TestUpdate(&stuffToUpdate,
+				fmt.Sprintf("%d", stuffId)).
 			WithResponseAs(&response).
-			WithQueryString(securityInfo).
+			WithParams(&securityInfo).
 			ExpectResultCount(1).
 			ExpectResultsValid().
 			ExpectResultNth(0, &stuffToUpdate).
@@ -148,7 +164,7 @@
 		result = stuff.
 			TestDelete(fmt.Sprintf("%d", stuffId)).
 			WithResponseAs(&response).
-			WithQueryString(security).
+			WithParams(security).
 			ExpectResultCount(1).
 			ExpectResultsValid().
 			ExpectResultNth(0, &stuffToUpdate).
