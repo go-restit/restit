@@ -202,3 +202,10 @@ You can then test your RESTful API like this:
         RunOrPanic()
 
 
+Bug Reports
+-----------
+
+To report issue, please visit the
+[issue tracker](https://github.com/yookoala/restit/issues).
+
+And of course, patches and pull requests are most welcome.
