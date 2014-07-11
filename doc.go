@@ -16,7 +16,6 @@
 //  of the licence can be found in the LICENSE.md file along with RESTit.
 //  If not, see <http://www.gnu.org/licenses/>.
 
-
 /*
 	Package RESTit provides helps to those who
 	want to write an integration test program
@@ -80,7 +79,7 @@
 		// first parameter is a human readable name that will
 		// appear on error second parameter is the base URL to
 		// the API entry point
-		stuff := restit.CreateTester(
+		stuff := restit.Rest(
 			"Stuff", "http://foobar:8080/api/stuffs")
 
 		// some parameters we'll use
@@ -109,8 +108,8 @@
 
 		// -------- Test Create --------
 		// 1. create the stuff
-		test = stuff.
-			TestCreate(&stuffToCreate).
+		test = stuffAPI.
+			Create(&stuffToCreate).
 			WithParams(&securityInfo).
 			WithResponseAs(&response).
 			ExpectResultCount(1).
@@ -128,7 +127,7 @@
 			// you may add more verbose output for
 			// inspection
 			fmt.Printf("Failed creating stuff!!!!\n")
-			fmt.Printf("Please inspect the Raw Response: " 
+			fmt.Printf("Please inspect the Raw Response: "
 					+ result.RawText())
 
 			// or you can simply:
@@ -142,7 +141,7 @@
 		stuffToUpdate.StuffId = stuffId
 
 		// 2. test the created stuff
-		test = stuff.
+		test = stuffAPI.
 			TestRetrieve(fmt.Sprintf("%d", stuffId)).
 			WithResponseAs(&response).
 			ExpectResultCount(1).
@@ -154,8 +153,8 @@
 
 		// -------- Test Update --------
 		// 1. update the stuff
-		result = stuff.
-			TestUpdate(&stuffToUpdate,
+		result = stuffAPI.
+			Update(&stuffToUpdate,
 				fmt.Sprintf("%d", stuffId)).
 			WithResponseAs(&response).
 			WithParams(&securityInfo).
@@ -165,8 +164,8 @@
 			RunOrPanic() // Yes, you can be this lazy
 
 		// 2. test the updated stuff
-		result = stuff.
-			TestRetrieve(fmt.Sprintf("%d", stuffId)).
+		result = stuffAPI.
+			Retrieve(fmt.Sprintf("%d", stuffId)).
 			WithResponseAs(&response).
 			ExpectResultCount(1).
 			ExpectResultsValid().
@@ -176,8 +175,8 @@
 
 		// -------- Test Delete --------
 		// delete the stuff
-		result = stuff.
-			TestDelete(fmt.Sprintf("%d", stuffId)).
+		result = stuffAPI.
+			Delete(fmt.Sprintf("%d", stuffId)).
 			WithResponseAs(&response).
 			WithParams(security).
 			ExpectResultCount(1).
@@ -186,8 +185,8 @@
 			RunOrPanic()
 
 		// 2. test the deleted stuff
-		result = stuff.
-			TestRetrieve(fmt.Sprintf("%d", stuffId)).
+		result = stuffAPI.
+			Retrieve(fmt.Sprintf("%d", stuffId)).
 			WithResponseAs(&response).
 			ExpectResultStatus(404).
 			RunOrPanic()

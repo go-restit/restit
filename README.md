@@ -85,11 +85,11 @@ You can then test your RESTful API like this:
 
     import "github.com/yookoala/restit"
 
-    // create a tester for your stuff
+    // create a tester for your stuffAPI
     // first parameter is a human readable name that will
     // appear on error second parameter is the base URL to
     // the API entry point
-    stuff := restit.CreateTester(
+    stuffAPI := restit.Rest(
         "Stuff", "http://foobar:8080/api/stuffs")
 
     // some parameters we'll use
@@ -118,8 +118,8 @@ You can then test your RESTful API like this:
 
     // -------- Test Create --------
     // 1. create the stuff
-    test = stuff.
-        TestCreate(&stuffToCreate).
+    test = stuffAPI.
+        Create(&stuffToCreate).
         WithParams(&securityInfo).
         WithResponseAs(&response).
         ExpectResultCount(1).
@@ -151,8 +151,8 @@ You can then test your RESTful API like this:
     stuffToUpdate.StuffId = stuffId
 
     // 2. test the created stuff
-    test = stuff.
-        TestRetrieve(fmt.Sprintf("%d", stuffId)).
+    test = stuffAPI.
+        Retrieve(fmt.Sprintf("%d", stuffId)).
         WithResponseAs(&response).
         ExpectResultCount(1).
         ExpectResultsValid().
@@ -163,8 +163,8 @@ You can then test your RESTful API like this:
 
     // -------- Test Update --------
     // 1. update the stuff
-    result = stuff.
-        TestUpdate(&stuffToUpdate,
+    result = stuffAPI.
+        Update(&stuffToUpdate,
             fmt.Sprintf("%d", stuffId)).
         WithResponseAs(&response).
         WithParams(&securityInfo).
@@ -174,8 +174,8 @@ You can then test your RESTful API like this:
         RunOrPanic() // Yes, you can be this lazy
 
     // 2. test the updated stuff
-    result = stuff.
-        TestRetrieve(fmt.Sprintf("%d", stuffId)).
+    result = stuffAPI.
+        Retrieve(fmt.Sprintf("%d", stuffId)).
         WithResponseAs(&response).
         ExpectResultCount(1).
         ExpectResultsValid().
@@ -185,8 +185,8 @@ You can then test your RESTful API like this:
 
     // -------- Test Delete --------
     // delete the stuff
-    result = stuff.
-        TestDelete(fmt.Sprintf("%d", stuffId)).
+    result = stuffAPI.
+        Delete(fmt.Sprintf("%d", stuffId)).
         WithResponseAs(&response).
         WithParams(security).
         ExpectResultCount(1).
@@ -195,8 +195,8 @@ You can then test your RESTful API like this:
         RunOrPanic()
 
     // 2. test the deleted stuff
-    result = stuff.
-        TestRetrieve(fmt.Sprintf("%d", stuffId)).
+    result = stuffAPI.
+        Retrieve(fmt.Sprintf("%d", stuffId)).
         WithResponseAs(&response).
         ExpectResultStatus(404).
         RunOrPanic()
