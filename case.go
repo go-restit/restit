@@ -25,6 +25,7 @@ import (
 
 type Case struct {
 	Request      *napping.Request
+	Name         string
 	Session      Session
 	Expectations []Expectation
 	Tester       *Tester
@@ -43,8 +44,11 @@ func (c *Case) Run() (r *Result, err error) {
 	for i := 0; i < len(c.Expectations); i++ {
 		err = c.Expectations[i].Test(resp)
 		if err != nil {
-			err = fmt.Errorf("Failed in test: \"%s\" "+
+			err = fmt.Errorf("[%s][%s]"+
+				"Failed in test: \"%s\" "+
 				"Reason: \"%s\"",
+				c.Tester.Name,
+				c.Name,
 				c.Expectations[i].Desc,
 				err.Error())
 			return

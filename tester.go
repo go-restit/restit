@@ -49,6 +49,7 @@ func (t *Tester) Create(payload interface{}) *Case {
 	}
 	c := Case{
 		Request: &r,
+		Name:    "Create",
 		Session: &s,
 		Tester:  t,
 	}
@@ -64,6 +65,7 @@ func (t *Tester) Retrieve(id string) *Case {
 	}
 	c := Case{
 		Request: &r,
+		Name:    "Retrieve",
 		Session: &s,
 		Tester:  t,
 	}
@@ -81,6 +83,7 @@ func (t *Tester) Update(
 	}
 	c := Case{
 		Request: &r,
+		Name:    "Update",
 		Session: &s,
 		Tester:  t,
 	}
@@ -96,6 +99,7 @@ func (t *Tester) Delete(id string) *Case {
 	}
 	c := Case{
 		Request: &r,
+		Name:    "Delete",
 		Session: &s,
 		Tester:  t,
 	}
