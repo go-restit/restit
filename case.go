@@ -43,7 +43,7 @@ func (c *Case) Run() (r *Result, err error) {
 	for i := 0; i < len(c.Expectations); i++ {
 		err = c.Expectations[i].Test(resp)
 		if err != nil {
-			err = fmt.Errorf("Failed in test: \"%s\" " +
+			err = fmt.Errorf("Failed in test: \"%s\" "+
 				"Reason: \"%s\"",
 				c.Expectations[i].Desc,
 				err.Error())
@@ -84,8 +84,27 @@ func (c *Case) ExpectResultCount(n int) *Case {
 			count := r.Count()
 			if count != n {
 				err = fmt.Errorf(
-					"Result count is %d " +
-					"(expected %d)",
+					"Result count is %d "+
+						"(expected %d)",
+					count, n)
+			}
+			return
+		},
+	})
+	return c
+}
+
+// Append Test to Expectations
+// Tests if the result count not equal to n
+func (c *Case) ExpectResultCountNot(n int) *Case {
+	c.Expectations = append(c.Expectations, Expectation{
+		Desc: "Test Result Count",
+		Test: func(r Response) (err error) {
+			count := r.Count()
+			if count == n {
+				err = fmt.Errorf(
+					"Result count is %d "+
+						"(expected %d)",
 					count, n)
 			}
 			return

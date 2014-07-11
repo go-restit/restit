@@ -87,6 +87,53 @@ func Test_Case_ExpectResultCount_err(t *testing.T) {
 
 }
 
+func Test_Case_ExpectResultCountNot_0(t *testing.T) {
+
+	c := Case{}
+	r := dummyResponse{
+		Dummies: []dummy{
+			dummy{},
+		},
+	}
+	c.ExpectResultCountNot(0)
+	err := c.Expectations[0].Test(&r)
+	if err != nil {
+		t.Error("Unable to pass with a valid count not 0")
+	}
+
+}
+
+func Test_Case_ExpectResultCountNot_n(t *testing.T) {
+
+	c := Case{}
+	r := dummyResponse{
+		Dummies: []dummy{},
+	}
+	c.ExpectResultCountNot(3)
+	err := c.Expectations[0].Test(&r)
+	if err != nil {
+		t.Error("Unable to pass with a valid count not n")
+	}
+
+}
+
+func Test_Case_ExpectResultCountNot_err(t *testing.T) {
+
+	c := Case{}
+	r := dummyResponse{
+		Dummies: []dummy{
+			dummy{},
+			dummy{},
+		},
+	}
+	c.ExpectResultCountNot(2)
+	err := c.Expectations[0].Test(&r)
+	if err == nil {
+		t.Error("Unable to detect count match")
+	}
+
+}
+
 func Test_Case_ExpectResultsValid(t *testing.T) {
 
 	c := Case{}
