@@ -20,6 +20,8 @@ package restit
 
 import (
 	"github.com/jmcvetta/napping"
+	"log"
+	"os"
 )
 
 // Create a tester for an API entry point
@@ -35,8 +37,37 @@ func Rest(name string, url string) *Tester {
 
 // Tester represents an ordinary RESTful entry point
 type Tester struct {
-	Name string
-	Url  string
+	Name  string
+	Url   string
+	Trace *log.Logger
+	Err   *log.Logger
+}
+
+// setup default log environment
+func (t *Tester) LogDefault() *Tester {
+	if t.Trace == nil {
+		t.LogTraceTo(log.New(os.Stdout,
+			"[TRACE] ",
+			log.Ldate|log.Ltime|log.Lshortfile))
+	}
+	if t.Err == nil {
+		t.LogErrTo(log.New(os.Stderr,
+			"[ERROR] ",
+			log.Ldate|log.Ltime|log.Lshortfile))
+	}
+	return t
+}
+
+// Add trace logger
+func (t *Tester) LogTraceTo(l *log.Logger) *Tester {
+	t.Trace = l
+	return t
+}
+
+// Add error logger
+func (t *Tester) LogErrTo(l *log.Logger) *Tester {
+	t.Err = l
+	return t
 }
 
 // Create Case to Create something with the payload

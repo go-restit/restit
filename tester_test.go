@@ -19,8 +19,26 @@
 package restit
 
 import (
+	"log"
+	"os"
 	"testing"
 )
+
+func Test_Tester_Log(t *testing.T) {
+	lt := log.New(os.Stdout, "[TRACE] ",
+		log.Ldate|log.Ltime|log.Lshortfile)
+	le := log.New(os.Stdout, "[ERROR] ",
+		log.Ldate|log.Ltime|log.Lshortfile)
+	test := Rest("Dummy", "http://foobar/dummy").
+		LogTraceTo(lt).
+		LogErrTo(le)
+	if test.Trace != lt {
+		t.Error("Failed to set LogTrace with LogTraceTo")
+	}
+	if test.Err != le {
+		t.Error("Failed to set LogErr with LogErrTo")
+	}
+}
 
 func Test_Tester_Create(t *testing.T) {
 	a := dummy{
