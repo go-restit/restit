@@ -33,7 +33,16 @@ type Case struct {
 
 // To actually run the test case
 func (c *Case) Run() (r *Result, err error) {
+
+	// setup default
+	c.Tester.LogDefault()
+
+	// send request
 	res, err := c.Session.Send(c.Request)
+	c.Tester.Trace.Printf("[%s][%s] Raw Response: \"%s\"\n",
+		c.Tester.Name,
+		c.Name,
+		res.RawText())
 	result := Result{
 		Response: res,
 	}
@@ -44,13 +53,13 @@ func (c *Case) Run() (r *Result, err error) {
 	for i := 0; i < len(c.Expectations); i++ {
 		err = c.Expectations[i].Test(resp)
 		if err != nil {
-			err = fmt.Errorf("[%s][%s]"+
-				"Failed in test: \"%s\" "+
-				"Reason: \"%s\"",
+			err = fmt.Errorf("[%s][%s][%s] "+
+				"Failed: \"%s\"",
 				c.Tester.Name,
 				c.Name,
 				c.Expectations[i].Desc,
 				err.Error())
+			c.Tester.Err.Println(err.Error())
 			return
 		}
 	}
