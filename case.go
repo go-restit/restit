@@ -32,11 +32,37 @@ type Case struct {
 	Result       *Result
 }
 
+// short hand to initialize and enable defaults
+// even if tester is not present
+func (c *Case) InitForRun() *Case {
+
+	// Tester must be there to provide log
+	if c.Tester == nil {
+		c.Tester = new(Tester)
+	}
+
+	// load default logging behaviour
+	c.Tester.LogDefault()
+
+	// there must be a request
+	if c.Request == nil {
+		c.Request = new(napping.Request)
+	}
+
+	// if result is not specified,
+	// substitute nilResp as response type
+	if c.Request.Result == nil {
+		c.Request.Result = new(nilResp)
+	}
+
+	return c
+}
+
 // To actually run the test case
 func (c *Case) Run() (r *Result, err error) {
 
-	// setup default
-	c.Tester.LogDefault()
+	// setup default tester
+	c.InitForRun()
 
 	// send request
 	res, err := c.Session.Send(c.Request)
@@ -173,7 +199,7 @@ func (c *Case) ExpectStatus(ec int) *Case {
 		Desc: "Test Status Code",
 		Test: func(r Response) (err error) {
 			rc := c.Result.Response.Status()
-			if (rc != ec) {
+			if rc != ec {
 				err = fmt.Errorf("Status code is %d (expected %d)",
 					rc, ec)
 			}
@@ -182,7 +208,6 @@ func (c *Case) ExpectStatus(ec int) *Case {
 	})
 	return c
 }
-
 
 // Append Custom Test to Expectation
 // Allow user to inject user defined tests

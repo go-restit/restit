@@ -24,6 +24,15 @@ import (
 	"testing"
 )
 
+func Test_Case_WithResponseAs_nil(t *testing.T) {
+
+	c := Case{
+		Session: new(dummyNilSession),
+	}
+	c.Run()
+
+}
+
 func Test_Case_WithParams(t *testing.T) {
 
 	r := napping.Request{}

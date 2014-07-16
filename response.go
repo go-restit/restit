@@ -18,6 +18,10 @@
 
 package restit
 
+import (
+	"fmt"
+)
+
 // Response needed to fulfill this interface
 // in order to be tested by RESTit
 type Response interface {
@@ -25,4 +29,27 @@ type Response interface {
 	NthValid(int) error
 	GetNth(int) (interface{}, error)
 	Match(interface{}, interface{}) error
+}
+
+// The default response type
+// if user did not use WithResponseAs to
+// specify unmarshal target
+// implements Response interface
+type nilResp struct {
+}
+
+func (r *nilResp) Count() int {
+	return 0
+}
+
+func (r *nilResp) NthValid(int) error {
+	return fmt.Errorf("Please specify response struct using Case.WithResponseAs")
+}
+
+func (r *nilResp) GetNth(int) (interface{}, error) {
+	return nil, fmt.Errorf("Please specify response struct using Case.WithResponseAs")
+}
+
+func (r *nilResp) Match(a interface{}, b interface{}) error {
+	return fmt.Errorf("Please specify response struct using Case.WithResponseAs")
 }

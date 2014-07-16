@@ -48,12 +48,12 @@ func (t *Tester) LogDefault() *Tester {
 	if t.Trace == nil {
 		t.LogTraceTo(log.New(os.Stdout,
 			"[TRACE] ",
-			log.Ldate|log.Ltime|log.Lshortfile))
+			log.Ldate|log.Ltime))
 	}
 	if t.Err == nil {
 		t.LogErrTo(log.New(os.Stderr,
 			"[ERROR] ",
-			log.Ldate|log.Ltime|log.Lshortfile))
+			log.Ldate|log.Ltime))
 	}
 	return t
 }

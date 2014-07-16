@@ -70,3 +70,14 @@ func (s dummySession) Send(req *napping.Request) (
 	}
 	return
 }
+
+// dummy session for nilResp test
+type dummyNilSession struct {
+}
+
+func (s dummyNilSession) Send(req *napping.Request) (
+	res *napping.Response, err error) {
+	res = new(napping.Response)
+	// placeholder only
+	return
+}
