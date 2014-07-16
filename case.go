@@ -21,6 +21,8 @@ package restit
 import (
 	"fmt"
 	"github.com/jmcvetta/napping"
+	"path"
+	"runtime"
 )
 
 type Case struct {
@@ -64,9 +66,14 @@ func (c *Case) Run() (r *Result, err error) {
 	// setup default tester
 	c.InitForRun()
 
+	// get caller information
+	_, file, line, _ := runtime.Caller(2)
+
 	// send request
 	res, err := c.Session.Send(c.Request)
-	c.Tester.Trace.Printf("[%s][%s] Raw Response: \"%s\"\n",
+	c.Tester.Trace.Printf("[%s:%d][%s][%s] Raw Response: \"%s\"\n",
+		path.Base(file),
+		line,
 		c.Tester.Name,
 		c.Name,
 		res.RawText())
@@ -81,8 +88,10 @@ func (c *Case) Run() (r *Result, err error) {
 	for i := 0; i < len(c.Expectations); i++ {
 		err = c.Expectations[i].Test(resp)
 		if err != nil {
-			err = fmt.Errorf("[%s][%s][%s] "+
+			err = fmt.Errorf("[%s:%d][%s][%s][%s] "+
 				"Failed: \"%s\"",
+				path.Base(file),
+				line,
 				c.Tester.Name,
 				c.Name,
 				c.Expectations[i].Desc,
