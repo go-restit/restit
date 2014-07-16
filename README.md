@@ -198,7 +198,7 @@ You can then test your RESTful API like this:
     result = stuffAPI.
         Retrieve(fmt.Sprintf("%d", stuffId)).
         WithResponseAs(&response).
-        ExpectResultStatus(404).
+        ExpectStatus(404).
         RunOrPanic()
 
 

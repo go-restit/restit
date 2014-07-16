@@ -29,6 +29,7 @@ type Case struct {
 	Session      Session
 	Expectations []Expectation
 	Tester       *Tester
+	Result       *Result
 }
 
 // To actually run the test case
@@ -46,6 +47,7 @@ func (c *Case) Run() (r *Result, err error) {
 	result := Result{
 		Response: res,
 	}
+	c.Result = &result
 	r = &result
 
 	// test each expectations
@@ -163,6 +165,24 @@ func (c *Case) ExpectResultNth(n int, b interface{}) *Case {
 	})
 	return c
 }
+
+// Append Test to Expectations
+// Tests if the response status is
+func (c *Case) ExpectStatus(ec int) *Case {
+	c.Expectations = append(c.Expectations, Expectation{
+		Desc: "Test Status Code",
+		Test: func(r Response) (err error) {
+			rc := c.Result.Response.Status()
+			if (rc != ec) {
+				err = fmt.Errorf("Status code is %d (expected %d)",
+					rc, ec)
+			}
+			return
+		},
+	})
+	return c
+}
+
 
 // Append Custom Test to Expectation
 // Allow user to inject user defined tests

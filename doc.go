@@ -188,7 +188,7 @@
 		result = stuffAPI.
 			Retrieve(fmt.Sprintf("%d", stuffId)).
 			WithResponseAs(&response).
-			ExpectResultStatus(404).
+			ExpectStatus(404).
 			RunOrPanic()
 
 */
