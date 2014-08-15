@@ -23,6 +23,7 @@ import (
 	"github.com/jmcvetta/napping"
 	"path"
 	"runtime"
+	"net/http"
 )
 
 type Case struct {
@@ -111,6 +112,15 @@ func (c *Case) RunOrPanic() (r *Result) {
 		panic(err)
 	}
 	return
+}
+
+// Add a header parameter
+func (c *Case) AddHeader(key, value string) *Case {
+	if c.Request.Header == nil {
+		c.Request.Header = &http.Header{}
+	}
+	c.Request.Header.Add(key, value)
+	return c
 }
 
 // Set the result to the given interface{}

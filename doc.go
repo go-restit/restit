@@ -110,6 +110,7 @@
 		// 1. create the stuff
 		test = stuffAPI.
 			Create(&stuffToCreate).
+			AddHeader("Authorization", "Some token").
 			WithParams(&securityInfo).
 			WithResponseAs(&response).
 			ExpectResultCount(1).

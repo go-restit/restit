@@ -33,6 +33,19 @@ func Test_Case_WithResponseAs_nil(t *testing.T) {
 
 }
 
+func Test_Case_AddHeader(t *testing.T) {
+
+	r := napping.Request{}
+	c := Case{
+		Request: &r,
+	}
+	c.AddHeader("foo", "bar")
+	if r.Header.Get("foo") != "bar" {
+		t.Error("AddHeader failed to add a header parameter")
+	}
+
+}
+
 func Test_Case_WithParams(t *testing.T) {
 
 	r := napping.Request{}
