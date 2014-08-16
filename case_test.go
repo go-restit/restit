@@ -33,6 +33,58 @@ func Test_Case_WithResponseAs_nil(t *testing.T) {
 
 }
 
+func Test_Case_WithResponseAs_invalid(t *testing.T) {
+
+	pass := false
+
+	defer func() {
+		if r := recover(); r != nil {
+			t.Logf("Recovered in f: %#v", r)
+			pass = true
+			t.Logf("Invalid response type triggers error")
+		}
+	}()
+
+	resp := "some invalid response"
+	r := napping.Request{}
+	r.Result = &resp
+	c := Case{
+		Request: &r,
+		Session: new(dummyNilSession),
+	}
+	c.RunOrPanic()
+
+	if pass != true {
+		t.Errorf("Invalid response type does not raise error")
+	}
+
+}
+
+func Test_Case_WithResponseAs_reset(t *testing.T) {
+
+	// test reset with filled response
+	r := dummyResponse{
+		Dummies: []dummy{
+			dummy{},
+			dummy{},
+			dummy{},
+		},
+	}
+
+	c := Case{
+		Request: &napping.Request{},
+		Session: new(dummyNilSession),
+	}
+	t.Logf("resp: %#v", r)
+	c.WithResponseAs(&r)
+	c.Run()
+
+	if len(r.Dummies) != 0 {
+		t.Errorf("Case.Run() fails to trigger Response.Reset")
+	}
+
+}
+
 func Test_Case_AddHeader(t *testing.T) {
 
 	r := napping.Request{}

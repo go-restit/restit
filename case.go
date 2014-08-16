@@ -21,9 +21,9 @@ package restit
 import (
 	"fmt"
 	"github.com/jmcvetta/napping"
+	"net/http"
 	"path"
 	"runtime"
-	"net/http"
 )
 
 type Case struct {
@@ -47,7 +47,8 @@ func (c *Case) InitForRun() *Case {
 	// load default logging behaviour
 	c.Tester.LogDefault()
 
-	// there must be a request
+	// c.Request must be a valid napping.Request
+	// this will be sent through napping.Send
 	if c.Request == nil {
 		c.Request = new(napping.Request)
 	}
@@ -57,6 +58,15 @@ func (c *Case) InitForRun() *Case {
 	if c.Request.Result == nil {
 		c.Request.Result = new(nilResp)
 	}
+
+	// trigger reset
+	r, ok := c.Request.Result.(Response)
+	if !ok {
+		panic(fmt.Errorf(
+			"The provided response %T does not implement restit.Response",
+			r))
+	}
+	r.Reset()
 
 	return c
 }

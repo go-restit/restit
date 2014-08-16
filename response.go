@@ -40,7 +40,6 @@ type Response interface {
 
 	// reset the result, prevent the problem of null result
 	Reset()
-
 }
 
 // The default response type
