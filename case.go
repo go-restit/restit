@@ -134,7 +134,7 @@ func (c *Case) AddHeader(key, value string) *Case {
 }
 
 // Set the result to the given interface{}
-func (c *Case) WithResponseAs(r interface{}) *Case {
+func (c *Case) WithResponseAs(r Response) *Case {
 	c.Request.Result = r
 	return c
 }
