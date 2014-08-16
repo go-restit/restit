@@ -75,6 +75,11 @@ Example:
     	// ...
     }
 
+    func (r *ExmplResp) Reset() {
+        r.Status = ""
+        r.Result = make([]Stuff, 0)
+    }
+
 Then you may write the tests.
 
 

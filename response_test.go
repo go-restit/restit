@@ -54,6 +54,10 @@ func (r *dummyResponse) Match(a interface{}, b interface{}) error {
 	return nil
 }
 
+func (r *dummyResponse) Reset() {
+	r.Dummies = make([]dummy, 0)
+}
+
 // dummy session with dummy send sequence
 type dummySession struct {
 }

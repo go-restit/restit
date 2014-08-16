@@ -71,7 +71,13 @@
 			// ...
 		}
 
-	You can then test your RESTful API like this:
+		func (r *ExmplResp) Reset() {
+			r.Status = ""
+			r.Result = make([]Stuff, 0)
+		}
+
+
+		You can then test your RESTful API like this:
 
 		import "github.com/yookoala/restit"
 

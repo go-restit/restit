@@ -25,10 +25,22 @@ import (
 // Response needed to fulfill this interface
 // in order to be tested by RESTit
 type Response interface {
+
+	// count the number of items in the result
 	Count() int
+
+	// test if the nth item is valid
 	NthValid(int) error
+
+	// test get the nth item
 	GetNth(int) (interface{}, error)
+
+	// test if the given 2 items matches
 	Match(interface{}, interface{}) error
+
+	// reset the result, prevent the problem of null result
+	Reset()
+
 }
 
 // The default response type
@@ -52,4 +64,7 @@ func (r *nilResp) GetNth(int) (interface{}, error) {
 
 func (r *nilResp) Match(a interface{}, b interface{}) error {
 	return fmt.Errorf("Please specify response struct using Case.WithResponseAs")
+}
+
+func (r *nilResp) Reset() {
 }
