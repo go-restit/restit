@@ -59,11 +59,26 @@ func (c *Case) InitForRun() *Case {
 		c.Request.Result = new(nilResp)
 	}
 
-	// trigger reset
+	// if error is not specified,
+	// substitute nilResp as response type
+	if c.Request.Error == nil {
+		c.Request.Error = new(nilResp)
+	}
+
+	// trigger result reset
 	r, ok := c.Request.Result.(Response)
 	if !ok {
 		panic(fmt.Errorf(
 			"The provided response %T does not implement restit.Response",
+			r))
+	}
+	r.Reset()
+
+	// trigger error reset
+	r, ok = c.Request.Error.(Response)
+	if !ok {
+		panic(fmt.Errorf(
+			"The provided error %T does not implement restit.Response",
 			r))
 	}
 	r.Reset()
@@ -93,9 +108,40 @@ func (c *Case) Run() (r *Result, err error) {
 	}
 	c.Result = &result
 	r = &result
+	var resp Response
+
+	// switch between Request.Result and Request.Error
+	// depends on the status code
+	if c.Result.Response.Status() < 300 {
+		if (*c).Request.Result == nil {
+			err = fmt.Errorf("[%s:%d][%s][%s] "+
+				"No request result struct",
+				path.Base(file),
+				line,
+				c.Tester.Name,
+				c.Name)
+		}
+		resp = (*c).Request.Result.(Response)
+	} else if c.Result.Response.Status() >= 400 {
+		if (*c).Request.Error == nil {
+			err = fmt.Errorf("[%s:%d][%s][%s] "+
+				"No request result struct",
+				path.Base(file),
+				line,
+				c.Tester.Name,
+				c.Name)
+		}
+		resp = (*c).Request.Error.(Response)
+	} else {
+		err = fmt.Errorf("[%s:%d][%s][%s] "+
+			"Result Redirected. Not Result or Error",
+			path.Base(file),
+			line,
+			c.Tester.Name,
+			c.Name)
+	}
 
 	// test each expectations
-	resp := (*c).Request.Result.(Response)
 	for i := 0; i < len(c.Expectations); i++ {
 		err = c.Expectations[i].Test(resp)
 		if err != nil {
@@ -136,6 +182,12 @@ func (c *Case) AddHeader(key, value string) *Case {
 // Set the result to the given interface{}
 func (c *Case) WithResponseAs(r Response) *Case {
 	c.Request.Result = r
+	return c
+}
+
+// Set the error message to the given interface{}
+func (c *Case) WithErrorAs(e Response) *Case {
+	c.Request.Error = e
 	return c
 }
 

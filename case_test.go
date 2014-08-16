@@ -85,6 +85,42 @@ func Test_Case_WithResponseAs_reset(t *testing.T) {
 
 }
 
+func Test_Case_WithErrorAs(t *testing.T) {
+
+	r := &napping.Request{}
+	resp := dummyResponse{
+		Dummies: []dummy{
+			dummy{},
+			dummy{},
+			dummy{},
+		},
+	}
+
+	c := Case{
+		Request: r,
+		Session: new(dummyNilSession),
+	}
+	c.WithErrorAs(&resp)
+
+	if resp.Count() != 3 {
+		t.Logf("Incorrect assumption, resp.Count() is not 3")
+	}
+
+	// set the resp through address in r.Error
+	var a *dummyResponse
+	a = (r.Error).(*dummyResponse)
+	(*a).Dummies = []dummy{
+		dummy{},
+		dummy{},
+	}
+
+	// test if the original error variable changed as expected
+	if resp.Count() != 2 {
+		t.Errorf("Case.WithErrorAs() failed to set napping.Response.Error")
+	}
+
+}
+
 func Test_Case_AddHeader(t *testing.T) {
 
 	r := napping.Request{}
