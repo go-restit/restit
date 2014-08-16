@@ -60,9 +60,9 @@ func (c *Case) InitForRun() *Case {
 	}
 
 	// if error is not specified,
-	// substitute nilResp as response type
+	// presume it is the same as result
 	if c.Request.Error == nil {
-		c.Request.Error = new(nilResp)
+		c.Request.Error = c.Request.Result
 	}
 
 	// trigger result reset
