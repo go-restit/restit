@@ -22,6 +22,7 @@ import (
 	"github.com/jmcvetta/napping"
 	"log"
 	"os"
+	"strings"
 )
 
 // Create a tester for an API entry point
@@ -68,6 +69,26 @@ func (t *Tester) LogTraceTo(l *log.Logger) *Tester {
 func (t *Tester) LogErrTo(l *log.Logger) *Tester {
 	t.Err = l
 	return t
+}
+
+// Create Case to List something with the id string
+func (t *Tester) List(path ...string) *Case {
+	u := t.Url
+	if len(path) > 0 {
+		u = u + "/" + strings.Join(path, "/")
+	}
+	s := napping.Session{}
+	r := napping.Request{
+		Method: "GET",
+		Url:    u,
+	}
+	c := Case{
+		Request: &r,
+		Name:    "List",
+		Session: &s,
+		Tester:  t,
+	}
+	return &c
 }
 
 // Create Case to Create something with the payload

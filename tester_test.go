@@ -40,6 +40,45 @@ func Test_Tester_Log(t *testing.T) {
 	}
 }
 
+func Test_Tester_List_Emtpy(t *testing.T) {
+	u := "http://foobar/dummy"
+	expected := u
+
+	test := Rest("Dummy", u).
+		List()
+	if test.Request.Url != expected {
+		t.Errorf("Unexpected generated URL. Expected \"%s\" but get \"%s\"",
+			u,
+			test.Request.Url)
+	}
+}
+
+func Test_Tester_List_Single(t *testing.T) {
+	u := "http://foobar/dummy"
+	expected := u + "/hello"
+
+	test := Rest("Dummy", u).
+		List("hello")
+	if test.Request.Url != expected {
+		t.Errorf("Unexpected generated URL. Expected \"%s\" but get \"%s\"",
+			expected,
+			test.Request.Url)
+	}
+}
+
+func Test_Tester_List_Multiple(t *testing.T) {
+	u := "http://foobar/dummy"
+	expected := u + "/hello/world"
+
+	test := Rest("Dummy", u).
+		List("hello", "world")
+	if test.Request.Url != "http://foobar/dummy/hello/world" {
+		t.Errorf("Unexpected generated URL. Expected \"%s\" but get \"%s\"",
+			expected,
+			test.Request.Url)
+	}
+}
+
 func Test_Tester_Create(t *testing.T) {
 	a := dummy{
 		Name: "Hello Dummy",

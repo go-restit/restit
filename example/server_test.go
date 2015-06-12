@@ -14,6 +14,14 @@ func TestExampleHandler(t *testing.T) {
 	api := restit.Rest("Nodes", s.URL+"/api/nodes")
 	var err error
 
+	// test list
+	_, err = api.List("").
+		ExpectStatus(http.StatusOK).
+		Run()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
 	// test create
 	_, err = api.Create(map[string]interface{}{
 		"name": "node 4",
