@@ -1,6 +1,8 @@
 RESTit
 ======
 
+![master build test result](https://api.travis-ci.org/yookoala/restit.svg?branch=master)
+
 A Go micro-framework to help writing RESTful API integration test
 
 Package RESTit provides helps to those who want to write an 
