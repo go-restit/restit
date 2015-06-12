@@ -15,7 +15,7 @@ func TestExampleHandler(t *testing.T) {
 	var err error
 
 	// test list
-	_, err = api.List("").
+	_, err = api.List().
 		ExpectStatus(http.StatusOK).
 		Run()
 	if err != nil {
