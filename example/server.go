@@ -3,6 +3,7 @@ package example
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"text/template"
 )
@@ -93,8 +94,16 @@ func ExampleHandler() http.Handler {
 	tplUpdate := template.Must(template.New("update").Parse(txtUpdate))
 	tplDelete := template.Must(template.New("delete").Parse(txtDelete))
 
+	logAccess := func(r *http.Request) {
+		log.Printf("%s %s Found", r.Method, r.URL.Path)
+	}
+	logNotfound := func(r *http.Request) {
+		log.Printf("%s %s Not Found", r.Method, r.URL.Path)
+	}
+
 	// handles listing and create
 	r.HandleFunc("/api/nodes", func(w http.ResponseWriter, r *http.Request) {
+		logAccess(r)
 		if r.Method == "GET" {
 			// dummy listing response
 			w.WriteHeader(http.StatusOK)
@@ -113,6 +122,7 @@ func ExampleHandler() http.Handler {
 
 	// handles read, update, delete
 	r.HandleFunc("/api/nodes/{id:[0-9]+}", func(w http.ResponseWriter, r *http.Request) {
+		logAccess(r)
 		vars := mux.Vars(r)
 		if r.Method == "GET" {
 			w.Header().Set("Content-Type", "application/json")
@@ -135,7 +145,17 @@ func ExampleHandler() http.Handler {
 			})
 			return
 		}
+		// no other method allowed
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		fmt.Fprint(w, txtStatusMethodNotAllowed)
 	})
+
+	var notFound http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
+		logNotfound(r)
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, "404 Not Found")
+	}
+	r.NotFoundHandler = notFound
 
 	return r
 }
