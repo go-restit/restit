@@ -45,7 +45,7 @@ func TestExampleHandler(t *testing.T) {
 		"id":   4,
 		"name": "node 4 updated",
 		"desc": "example node 4 updated",
-	}).ExpectStatus(http.StatusAccepted).
+	}).ExpectStatus(http.StatusOK).
 		Run()
 	if err != nil {
 		t.Errorf(err.Error())
@@ -53,17 +53,11 @@ func TestExampleHandler(t *testing.T) {
 
 	// test delete
 	_, err = api.Delete("4").
-		ExpectStatus(http.StatusNotFound).
+		ExpectStatus(http.StatusOK).
 		Run()
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
 	_ = s
-}
-
-type Resp map[string]interface{}
-
-type Resp2 struct {
-	Resp
 }

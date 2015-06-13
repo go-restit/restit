@@ -106,16 +106,19 @@ func ExampleHandler() http.Handler {
 		logAccess(r)
 		if r.Method == "GET" {
 			// dummy listing response
+			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprint(w, txtList)
 			return
 		} else if r.Method == "POST" {
 			// dummy node creating response
+			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprint(w, txtWrite)
 			return
 		}
 		// no other method allowed
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprint(w, txtStatusMethodNotAllowed)
 	})
@@ -132,20 +135,21 @@ func ExampleHandler() http.Handler {
 			})
 		} else if r.Method == "PUT" {
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusAccepted)
+			w.WriteHeader(http.StatusOK)
 			tplUpdate.Execute(w, map[string]interface{}{
 				"Vars": vars,
 			})
 			return
 		} else if r.Method == "DELETE" {
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusNotFound)
+			w.WriteHeader(http.StatusOK)
 			tplDelete.Execute(w, map[string]interface{}{
 				"Vars": vars,
 			})
 			return
 		}
 		// no other method allowed
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprint(w, txtStatusMethodNotAllowed)
 	})
