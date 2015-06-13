@@ -44,7 +44,7 @@ func TestDefaultResponse(t *testing.T) {
 	t.Log("*DefaultResponse implements Response")
 }
 
-func TestDefaultResponseResp(t *testing.T) {
+func TestDefaultResponseResp1(t *testing.T) {
 
 	// define a response with item type as testItem
 	// and item list field named "items"
@@ -97,4 +97,41 @@ func TestDefaultResponseResp(t *testing.T) {
 	} else {
 		t.Logf("JSON value set correctly")
 	}
+}
+
+func TestDefaultResponseResp2(t *testing.T) {
+
+	// define a response with wrong item list field name
+	p := NewResponse("not_exists", testItem{})
+
+	// set validator
+	p.SetValidator(func(in interface{}) error {
+		a := in.(testItem)
+		if a.Title == "" {
+			return errors.New("Incorrect item")
+		}
+		return nil
+	})
+
+	// set matcher
+	p.SetMatcher(func(a interface{}, b interface{}) (err error) {
+		aItem := a.(testItem)
+		bItem := b.(testItem)
+		if aItem.Title != bItem.Title {
+			err = errors.New("Title mismatch")
+		} else if aItem.Desc != bItem.Desc {
+			err = errors.New("Desc mismatch")
+		} else if aItem.Hello != bItem.Hello {
+			err = errors.New("Hello mismatch")
+		} else if aItem.Foo != bItem.Foo {
+			err = errors.New("Foo mismatch")
+		}
+		return
+	})
+
+	// decode testJsonList with *DefaultResponse
+	json.Unmarshal([]byte(testJsonList), &p)
+
+	// no panic is a pass
+	return
 }

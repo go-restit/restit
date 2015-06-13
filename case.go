@@ -56,7 +56,7 @@ func (c *Case) InitForRun() *Case {
 	// if result is not specified,
 	// substitute nilResp as response type
 	if c.Request.Result == nil {
-		c.Request.Result = new(nilResp)
+		c.Request.Result = NewResponse("items", nilType{})
 	}
 
 	// if error is not specified,
@@ -316,4 +316,8 @@ type Result struct {
 // to make unit testing easier
 type Session interface {
 	Send(*napping.Request) (*napping.Response, error)
+}
+
+// nilType is the default type in default response in default case
+type nilType struct {
 }
