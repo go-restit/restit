@@ -133,6 +133,7 @@ func ExampleHandler() http.Handler {
 			tplRead.Execute(w, map[string]interface{}{
 				"Vars": vars,
 			})
+			return
 		} else if r.Method == "PUT" {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
