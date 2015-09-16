@@ -21,6 +21,7 @@ package restit
 import (
 	"fmt"
 	"github.com/jmcvetta/napping"
+	"net/url"
 	"testing"
 )
 
@@ -136,14 +137,20 @@ func Test_Case_AddHeader(t *testing.T) {
 
 func Test_Case_WithParams(t *testing.T) {
 
-	r := napping.Request{}
+	r := napping.Request{
+		Params: &url.Values{},
+	}
 	c := Case{
 		Request: &r,
 	}
-	p := napping.Params{}
+	p := napping.Params{
+		"hello": "world",
+	}
 	c.WithParams(&p)
-	if c.Request.Params != &p {
-		t.Error("WithParams failed to set the parameter")
+	expRes := "world"
+	if res := c.Request.Params.Get("hello"); res != expRes {
+		t.Errorf("WithParams failed to set the parameter. "+
+			"expected: %#v, got: %#v", expRes, res)
 	}
 
 }

@@ -193,7 +193,7 @@ func (c *Case) WithErrorAs(e Response) *Case {
 
 // Set the query parameter
 func (c *Case) WithParams(p *napping.Params) *Case {
-	c.Request.Params = p
+	*c.Request.Params = p.AsUrlValues()
 	return c
 }
 
