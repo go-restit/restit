@@ -21,6 +21,7 @@ package restit
 import (
 	"fmt"
 	"github.com/jmcvetta/napping"
+	"net/url"
 	"testing"
 )
 
@@ -140,7 +141,7 @@ func Test_Case_WithParams(t *testing.T) {
 	c := Case{
 		Request: &r,
 	}
-	p := napping.Params{}
+	p := url.Values{}
 	c.WithParams(&p)
 	if c.Request.Params != &p {
 		t.Error("WithParams failed to set the parameter")

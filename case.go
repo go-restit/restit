@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"github.com/jmcvetta/napping"
 	"net/http"
+	"net/url"
 	"path"
 	"runtime"
 )
@@ -192,7 +193,7 @@ func (c *Case) WithErrorAs(e Response) *Case {
 }
 
 // Set the query parameter
-func (c *Case) WithParams(p *napping.Params) *Case {
+func (c *Case) WithParams(p *url.Values) *Case {
 	c.Request.Params = p
 	return c
 }
