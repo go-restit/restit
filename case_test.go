@@ -143,8 +143,8 @@ func Test_Case_WithParams(t *testing.T) {
 	c := Case{
 		Request: &r,
 	}
-	p := napping.Params{
-		"hello": "world",
+	p := url.Values{
+		"hello": []string{"world"},
 	}
 	c.WithParams(&p)
 	expRes := "world"
