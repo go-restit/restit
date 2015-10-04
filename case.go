@@ -98,6 +98,10 @@ func (c *Case) Run() (r *Result, err error) {
 
 	// send request
 	res, err := c.Session.Send(c.Request)
+	if err != nil {
+		return
+	}
+
 	c.Tester.Trace.Printf("[%s:%d][%s][%s] Raw Response: \"%s\"\n",
 		path.Base(file),
 		line,
