@@ -1,7 +1,7 @@
-RESTit
-======
+RESTit (v1)
+===========
 
-![master build test result](https://api.travis-ci.org/yookoala/restit.svg?branch=master)
+![master build test result](https://api.travis-ci.org/yookoala/restit.svg?branch=v1)
 
 A Go micro-framework to help writing RESTful API integration test
 
@@ -10,6 +10,27 @@ integration test program for their JSON-based RESTful APIs.
 
 The aim is to make these integration readable highly re-usable,
 and yet easy to modify.
+
+
+Notice
+------
+
+This is an old version of RESTit library. This is to keep older
+projects that depending RESTit from breaking. For new projects,
+please use the latest version.
+
+If you were using v1 and want to keep using it, please change
+your import statement from:
+
+    import (
+        "github.com/yookoala/restit"
+    )
+
+to:
+
+    import (
+        restit "github.com/yookoala/restit/v1"
+    )
 
 
 Dependencies
@@ -28,7 +49,7 @@ Install
 
 Just like installing other golang packages:
 
-    $ go get github.com/yookoala/restit
+    $ go get github.com/yookoala/restit/v1
 
 
 How to Use
@@ -90,7 +111,9 @@ Write Your Tests
 
 You can then test your RESTful API like this:
 
-    import "github.com/yookoala/restit"
+    import (
+        restit "github.com/yookoala/restit/v1"
+    )
 
     // create a tester for your stuffAPI
     // first parameter is a human readable name that will
