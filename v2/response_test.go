@@ -1,6 +1,7 @@
 package restit_test
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -10,6 +11,47 @@ import (
 
 	restit "github.com/yookoala/restit/v2"
 )
+
+func dummyTestStr() string {
+	return `{
+		"foo": "bar",
+		"hello": "world",
+		"answer": 42
+	}`
+}
+
+func dummyJSONTest(j *restit.JSON) (err error) {
+
+	var n *restit.JSON
+
+	if n, err = j.Get("foo"); err != nil {
+		err = fmt.Errorf("unable to find foo (%s)\nraw: %#v",
+			err.Error(), string(j.Raw()))
+		return
+	} else if want, have := "bar", n.String(); want != have {
+		err = fmt.Errorf(".foo expected %#v, got %#v", want, have)
+		return
+	}
+
+	if n, err = j.Get("hello"); err != nil {
+		err = fmt.Errorf("unable to find hello (%s)\nraw: %#v",
+			err.Error(), string(j.Raw()))
+		return
+	} else if want, have := "world", n.String(); want != have {
+		err = fmt.Errorf(".hello expected %#v, got %#v", want, have)
+		return
+	}
+
+	if n, err = j.Get("answer"); err != nil {
+		err = fmt.Errorf("unable to find answer (%s)\nraw: %#v",
+			err.Error(), string(j.Raw()))
+		return
+	} else if want, have := float64(42), n.Number(); want != have {
+		err = fmt.Errorf(".answer expected %#v, got %#v", want, have)
+		return
+	}
+	return
+}
 
 func TestResponse_httptest(t *testing.T) {
 	msg := RandString(10)
@@ -37,6 +79,32 @@ func TestResponse_httptest(t *testing.T) {
 
 	if want, have := w, resp.Raw(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
+	}
+}
+
+func TestResponse_httptest_JSON(t *testing.T) {
+	msg := dummyTestStr()
+	requestID := RandString(10)
+
+	w := httptest.NewRecorder()
+	w.Header().Set("X-Request-ID", requestID)
+	w.Write([]byte(msg))
+	w.WriteHeader(http.StatusOK)
+	w.Flush()
+
+	var resp restit.Response = &restit.HTTPTestResponse{w}
+	if want, have := http.StatusOK, resp.StatusCode(); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+	if want, have := requestID, resp.Header().Get("X-Request-ID"); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+
+	// test JSON result
+	if j, err := resp.JSON(); err != nil {
+		t.Errorf("unexpected error: %#v", err.Error())
+	} else if err := dummyJSONTest(j); err != nil {
+		t.Errorf("unexpected error: %#v", err.Error())
 	}
 }
 
@@ -104,5 +172,59 @@ func TestResponse_http(t *testing.T) {
 
 	if want, have := rawResp, resp.Raw(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
+	}
+}
+
+func TestResponse_http_JSON(t *testing.T) {
+	msg := dummyTestStr()
+	requestID := RandString(10)
+
+	// a simple repeater to test with
+	var repeater http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
+
+		if r == nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("nil request"))
+			return
+		}
+
+		if r.Method != "POST" {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("method not supported"))
+			return
+		}
+
+		b, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		w.Header().Add("x-Request-ID", requestID)
+		w.WriteHeader(http.StatusAccepted)
+		w.Write(b)
+	}
+	srv := httptest.NewServer(repeater)
+
+	// POST request to the test server
+	rawResp, err := http.Post(srv.URL, "text/plain", strings.NewReader(msg))
+	if err != nil {
+		t.Errorf("unexpected error: %#v", err.Error())
+	}
+
+	var resp restit.Response = &restit.HTTPResponse{rawResp}
+	if want, have := http.StatusAccepted, resp.StatusCode(); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+	if want, have := requestID, resp.Header().Get("X-Request-ID"); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+
+	// test JSON result
+	if j, err := resp.JSON(); err != nil {
+		t.Errorf("unexpected error: %#v", err.Error())
+	} else if err := dummyJSONTest(j); err != nil {
+		t.Errorf("unexpected error: %#v", err.Error())
 	}
 }
