@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/yookoala/restit/example"
+	"github.com/yookoala/restit/v1/example"
 	"net/http"
 	"os"
 )
