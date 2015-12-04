@@ -144,6 +144,8 @@ func TestCase_WithContext(t *testing.T) {
 	}
 
 	expRun := false
+	expHasContext := false
+
 	testHandler, handlerDone := getTestHandler()
 	testCase := restit.Case{
 		Request: req,
@@ -154,6 +156,11 @@ func TestCase_WithContext(t *testing.T) {
 			restit.Describe("dummy test 1",
 				func(ctx context.Context, resp restit.Response) (err error) {
 					expRun = true
+					if want, have := "hello dummy", ctx.Value(dummyKey); want != have {
+						err = fmt.Errorf("ctx.Value(dummyKey) expected %#v, got %#v", want, have)
+						return
+					}
+					expHasContext = true
 					return
 				}),
 		},
@@ -164,6 +171,10 @@ func TestCase_WithContext(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error %#v", err.Error())
 		return
+	}
+
+	if want, have := true, expHasContext; want != have {
+		err = fmt.Errorf("expected %#v, got %#v", want, have)
 	}
 
 	// test the response *JSON
