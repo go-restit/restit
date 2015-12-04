@@ -87,6 +87,13 @@ func TestStore(t *testing.T) {
 
 	store := server.NewStore()
 
+	// test listing empty store
+	if list := store.List(p1.GetType()); list == nil {
+		t.Error("unexpected nil value")
+	} else if want, have := 0, len(list); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+
 	// test append then retrieve
 	store.Put(&p1)
 	if now := store.Get(p1.GetType(), p1.ID); now == nil {

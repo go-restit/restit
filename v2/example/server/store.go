@@ -18,6 +18,7 @@ type Store map[string]map[interface{}]interface{}
 
 // List returns a list of Storabes of the given type
 func (s *Store) List(t string) (l []interface{}) {
+	l = make([]interface{}, 0)
 	if _, ok := (*s)[t]; !ok {
 		return
 	}
