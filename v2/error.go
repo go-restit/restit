@@ -30,9 +30,9 @@ type ContextError interface {
 
 // NewContextError creates a default implementation of
 // ContextError
-func NewContextError(msg string) ContextError {
+func NewContextError(msg string, v ...interface{}) ContextError {
 	err := &contextError{}
-	err.Append("message", msg)
+	err.Append("message", fmt.Sprintf(msg, v...))
 	return err
 }
 

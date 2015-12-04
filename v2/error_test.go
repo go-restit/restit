@@ -24,7 +24,7 @@ func TestContextError_NoMessage(t *testing.T) {
 }
 
 func TestContextError_AppendPrepend(t *testing.T) {
-	err := restit.NewContextError("dummy error")
+	err := restit.NewContextError("dummy %s", "error")
 	var err2 error = err
 	if want, have := "dummy error", err2.Error(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
