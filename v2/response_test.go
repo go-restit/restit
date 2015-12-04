@@ -1,7 +1,6 @@
 package restit_test
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -11,47 +10,6 @@ import (
 
 	restit "github.com/yookoala/restit/v2"
 )
-
-func dummyTestStr() string {
-	return `{
-		"foo": "bar",
-		"hello": "world",
-		"answer": 42
-	}`
-}
-
-func dummyJSONTest(j *restit.JSON) (err error) {
-
-	var n *restit.JSON
-
-	if n, err = j.Get("foo"); err != nil {
-		err = fmt.Errorf("unable to find foo (%s)\nraw: %#v",
-			err.Error(), string(j.Raw()))
-		return
-	} else if want, have := "bar", n.String(); want != have {
-		err = fmt.Errorf(".foo expected %#v, got %#v", want, have)
-		return
-	}
-
-	if n, err = j.Get("hello"); err != nil {
-		err = fmt.Errorf("unable to find hello (%s)\nraw: %#v",
-			err.Error(), string(j.Raw()))
-		return
-	} else if want, have := "world", n.String(); want != have {
-		err = fmt.Errorf(".hello expected %#v, got %#v", want, have)
-		return
-	}
-
-	if n, err = j.Get("answer"); err != nil {
-		err = fmt.Errorf("unable to find answer (%s)\nraw: %#v",
-			err.Error(), string(j.Raw()))
-		return
-	} else if want, have := float64(42), n.Number(); want != have {
-		err = fmt.Errorf(".answer expected %#v, got %#v", want, have)
-		return
-	}
-	return
-}
 
 func TestResponse_httptest(t *testing.T) {
 	msg := RandString(10)
@@ -83,7 +41,7 @@ func TestResponse_httptest(t *testing.T) {
 }
 
 func TestResponse_httptest_JSON(t *testing.T) {
-	msg := dummyTestStr()
+	msg := dummyJSONStr()
 	requestID := RandString(10)
 
 	w := httptest.NewRecorder()
@@ -176,7 +134,7 @@ func TestResponse_http(t *testing.T) {
 }
 
 func TestResponse_http_JSON(t *testing.T) {
-	msg := dummyTestStr()
+	msg := dummyJSONStr()
 	requestID := RandString(10)
 
 	// a simple repeater to test with

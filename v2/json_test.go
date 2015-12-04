@@ -8,29 +8,8 @@ import (
 	restit "github.com/yookoala/restit/v2"
 )
 
-func dummyStr() string {
-	return `{
-    "number": 1234.56,
-    "string": "foo bar",
-    "arrayOfString": [
-      "one",
-      "two",
-      "three",
-      "four"
-    ],
-    "object": {
-      "foo": "bar",
-      "hello": "world",
-      "answer": 42
-    },
-    "true": true,
-    "false": false,
-    "null": null
-  }`
-}
-
 func TestJSON_Unmarshaler(t *testing.T) {
-	str := dummyStr()
+	str := dummyJSONStr2()
 	j := &restit.JSON{}
 	var umlr json.Unmarshaler = j
 	if err := json.Unmarshal([]byte(str), umlr); err != nil {
@@ -42,7 +21,7 @@ func TestJSON_Unmarshaler(t *testing.T) {
 }
 
 func TestJSON_Unmarshal(t *testing.T) {
-	str := dummyStr()
+	str := dummyJSONStr2()
 	j, err := restit.ReadJSON(strings.NewReader(str))
 	if err != nil {
 		t.Errorf("unexpected error: %#v", err.Error())
@@ -141,7 +120,7 @@ func TestJSON_Type(t *testing.T) {
 }
 
 func TestJSON_Get(t *testing.T) {
-	str := dummyStr()
+	str := dummyJSONStr2()
 	j, err := restit.ReadJSON(strings.NewReader(str))
 	if err != nil {
 		t.Errorf("unexpected error: %#v", err.Error())
