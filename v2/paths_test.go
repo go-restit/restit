@@ -7,7 +7,7 @@ import (
 )
 
 func TestPaths_PathOnlyURL(t *testing.T) {
-	paths, err := restit.NewPaths("/foo/bar", "box", "boxes")
+	paths, err := restit.NewPaths("/foo/bar", restit.NewNoun("box", "boxes"))
 	if err != nil {
 		t.Errorf("unexpected error: %#v", err.Error())
 		return
@@ -29,7 +29,7 @@ func TestPaths_PathOnlyURL(t *testing.T) {
 }
 
 func TestPaths_PathOnlyURL_WithTrailSlash(t *testing.T) {
-	paths, err := restit.NewPaths("/foo/bar/", "box", "boxes")
+	paths, err := restit.NewPaths("/foo/bar/", restit.NewNoun("box", "boxes"))
 	if err != nil {
 		t.Errorf("unexpected error: %#v", err.Error())
 		return
@@ -51,7 +51,8 @@ func TestPaths_PathOnlyURL_WithTrailSlash(t *testing.T) {
 }
 
 func TestPaths_FullURL(t *testing.T) {
-	paths, err := restit.NewPaths("http://localhost:1234/foo/bar", "box", "boxes")
+	paths, err := restit.NewPaths("http://localhost:1234/foo/bar",
+		restit.NewNoun("box", "boxes"))
 	if err != nil {
 		t.Errorf("unexpected error: %#v", err.Error())
 		return
@@ -73,7 +74,8 @@ func TestPaths_FullURL(t *testing.T) {
 }
 
 func TestPaths_FullURL_WithTrailSlash(t *testing.T) {
-	paths, err := restit.NewPaths("http://localhost:1234/foo/bar/", "box", "boxes")
+	paths, err := restit.NewPaths("http://localhost:1234/foo/bar/",
+		restit.NewNoun("box", "boxes"))
 	if err != nil {
 		t.Errorf("unexpected error: %#v", err.Error())
 		return
