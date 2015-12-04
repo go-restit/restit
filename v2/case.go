@@ -50,8 +50,14 @@ func (c Case) Do() (resp Response, err error) {
 	// run all expectations
 	for i, expect := range c.Expectations {
 		if err = expect.Do(c.Context, resp); err != nil {
-			err = fmt.Errorf("expectation=%d desc=%#v msg=%#v",
-				i, expect.Desc(), err.Error())
+			var cErr ContextError
+			var ok bool
+			if cErr, ok = err.(ContextError); !ok {
+				cErr = NewContextError(err.Error())
+			}
+			cErr.Prepend("desc", expect.Desc())
+			cErr.Prepend("expectation", i)
+			err = cErr
 			return
 		}
 	}

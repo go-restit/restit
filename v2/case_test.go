@@ -225,7 +225,55 @@ func TestCase_ExpectationErr(t *testing.T) {
 
 	if _, err := testCase.Do(); err == nil {
 		t.Error("failed to trigger error")
-	} else if want, have := "expectation=1 desc=\"dummy test 2\" msg=\"dummy error\"", err.Error(); want != have {
+	} else if want, have := "dummy error", err.Error(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
+	} else if ctxErr, ok := err.(restit.ContextError); !ok {
+		t.Errorf("expected restit.ContextError, got %#v", err)
+	} else if want, have := `expectation=1 desc="dummy test 2" message="dummy error"`, ctxErr.Log(); want != have {
+		t.Errorf("\nexpected: %s\ngot:      %s", want, have)
+	}
+}
+
+func TestCase_ExpectationContextErr(t *testing.T) {
+	req, err := http.NewRequest("GET", "/foo/bar",
+		strings.NewReader(dummyJSONStr()))
+	if err != nil {
+		t.Errorf("unexpected error %#v", err.Error())
+		return
+	}
+
+	testHandler, _ := getTestHandler()
+	testCase := restit.Case{
+		Request: req,
+		Context: context.WithValue(
+			context.Background(), dummyKey, "hello dummy"),
+		Handler: testHandler,
+		Expectations: []restit.Expectation{
+			restit.Describe("dummy test 1",
+				func(ctx context.Context, resp restit.Response) (err error) {
+					return
+				}),
+			restit.Describe("dummy test 2",
+				func(ctx context.Context, resp restit.Response) (err error) {
+					ctxErr := restit.NewContextError("dummy error")
+					ctxErr.Append("foo", "bar")
+					err = ctxErr
+					return
+				}),
+			restit.Describe("dummy test 3",
+				func(ctx context.Context, resp restit.Response) (err error) {
+					return fmt.Errorf("never should have run this")
+				}),
+		},
+	}
+
+	if _, err := testCase.Do(); err == nil {
+		t.Error("failed to trigger error")
+	} else if want, have := "dummy error", err.Error(); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	} else if ctxErr, ok := err.(restit.ContextError); !ok {
+		t.Errorf("expected restit.ContextError, got %#v", err)
+	} else if want, have := `expectation=1 desc="dummy test 2" message="dummy error" foo="bar"`, ctxErr.Log(); want != have {
+		t.Errorf("\nexpected: %s\ngot:      %s", want, have)
 	}
 }
