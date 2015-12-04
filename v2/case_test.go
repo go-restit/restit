@@ -288,3 +288,31 @@ func TestCase_ExpectationContextErr(t *testing.T) {
 		t.Errorf("\nexpected: %s\ngot:      %s", want, have)
 	}
 }
+
+func TestCase_Describe(t *testing.T) {
+	fnRun := false
+	str := RandString(20)
+	fn := func(ctx context.Context, resp restit.Response) (err error) {
+		fnRun = true
+		return
+	}
+
+	desc := restit.Describe(str, fn)
+	desc.Do(nil, nil)
+	if want, have := str, desc.Desc(); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	} else if want, have := true, fnRun; want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+}
+
+func TestCase_Expect(t *testing.T) {
+	c := &restit.Case{}
+	str := RandString(20)
+	c.Expect(restit.Describe(str, nil))
+	if want, have := 1, len(c.Expectations); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	} else if want, have := str, c.Expectations[0].Desc(); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+}

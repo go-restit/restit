@@ -28,6 +28,12 @@ type Case struct {
 	Expectations []Expectation
 }
 
+// Expect appends an expectation to the Case
+func (c *Case) Expect(exp Expectation) *Case {
+	c.Expectations = append(c.Expectations, exp)
+	return c
+}
+
 // Do actually execute the case with CaseHandler
 // and return the result
 func (c Case) Do() (resp Response, err error) {
