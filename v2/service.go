@@ -69,7 +69,7 @@ func (s Service) List(v ...string) *Case {
 // Create sends a POST request (with JSON encoded payload)
 // to plural path and examine the result
 func (s Service) Create(payload interface{}, v ...string) *Case {
-	req, err := NewRequest("GET", s.Paths.Plural(v...), payload)
+	req, err := NewRequest("POST", s.Paths.Plural(v...), payload)
 	if err != nil {
 		panic(err)
 	}

@@ -42,7 +42,7 @@ func dummyTestSuite(service *restit.Service, paths restit.Paths) (err error) {
 			err = fmt.Errorf("[create][request] empty")
 		} else if want, have := paths.Plural(), req.URL.String(); want != have {
 			err = fmt.Errorf("[create][request.URL] expected %#v, got %#v", want, have)
-		} else if want, have := "GET", req.Method; want != have {
+		} else if want, have := "POST", req.Method; want != have {
 			err = fmt.Errorf("[create][request.Method] expected %#v, got %#v", want, have)
 		}
 		return
@@ -57,7 +57,7 @@ func dummyTestSuite(service *restit.Service, paths restit.Paths) (err error) {
 			err = fmt.Errorf("[create][request] empty")
 		} else if want, have := paths.Plural("foo", "bar"), req.URL.String(); want != have {
 			err = fmt.Errorf("[create][request.URL] expected %#v, got %#v", want, have)
-		} else if want, have := "GET", req.Method; want != have {
+		} else if want, have := "POST", req.Method; want != have {
 			err = fmt.Errorf("[create][request.Method] expected %#v, got %#v", want, have)
 		}
 		return
