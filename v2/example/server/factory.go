@@ -4,17 +4,19 @@ import "reflect"
 
 // NewPtr takes a variable and make a new one
 // of the same type
-func NewPtr(v interface{}) (cpy interface{}) {
+func NewPtr(v interface{}) (ret interface{}) {
 	if v == nil {
 		return
 	}
 	t := reflect.TypeOf(v)
-	if t.Kind() != reflect.Ptr {
-		t = reflect.PtrTo(t)
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
 	}
 
-	rcpy := reflect.New(t).Elem()
-	cpy = rcpy.Interface()
+	// create a pointer with a zero-initialized value
+	// of the given type
+	newPtr := reflect.New(t)
+	ret = newPtr.Interface()
 	return
 }
 

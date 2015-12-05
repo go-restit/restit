@@ -13,18 +13,22 @@ func TestNewPtr(t *testing.T) {
 		Num int
 	}
 
-	p1 := post{}
+	orgl := post{}
 
-	if p2v := server.NewPtr(p1); p2v == nil {
-		t.Errorf("unexpected nil value: %#v", p2v)
-	} else if _, ok := p2v.(*post); !ok {
-		t.Errorf("duplicate failed. returned %#v", p2v)
+	if v := server.NewPtr(orgl); v == nil {
+		t.Errorf("unexpected nil value: %#v", v)
+	} else if product, ok := v.(*post); !ok {
+		t.Errorf("duplicate failed. returned %#v", v)
+	} else if product == nil {
+		t.Errorf("unexpected nil value: %#v", product)
 	}
 
-	if p2v := server.NewPtr(&p1); p2v == nil {
-		t.Errorf("unexpected nil value: %#v", p2v)
-	} else if _, ok := p2v.(*post); !ok {
-		t.Errorf("duplicate failed. returned %#v", p2v)
+	if v := server.NewPtr(&orgl); v == nil {
+		t.Errorf("unexpected nil value: %#v", v)
+	} else if product, ok := v.(*post); !ok {
+		t.Errorf("duplicate failed. returned %#v", v)
+	} else if product == nil {
+		t.Errorf("unexpected nil value: %#v", product)
 	}
 
 }
@@ -36,18 +40,22 @@ func TestNewSlicePtr(t *testing.T) {
 		Num int
 	}
 
-	p1 := post{}
+	orgl := post{}
 
-	if p2v := server.NewSlicePtr(p1); p2v == nil {
-		t.Errorf("unexpected nil value: %#v", p2v)
-	} else if _, ok := p2v.(*[]post); !ok {
-		t.Errorf("duplicate failed. returned %#v", p2v)
+	if v := server.NewSlicePtr(orgl); v == nil {
+		t.Errorf("unexpected nil value: %#v", v)
+	} else if product, ok := v.(*[]post); !ok {
+		t.Errorf("duplicate failed. returned %#v", v)
+	} else if product == nil {
+		t.Errorf("unexpected nil value: %#v", product)
 	}
 
-	if p2v := server.NewSlicePtr(&p1); p2v == nil {
-		t.Errorf("unexpected nil value: %#v", p2v)
-	} else if _, ok := p2v.(*[]post); !ok {
-		t.Errorf("duplicate failed. returned %#v", p2v)
+	if v := server.NewSlicePtr(&orgl); v == nil {
+		t.Errorf("unexpected nil value: %#v", v)
+	} else if product, ok := v.(*[]post); !ok {
+		t.Errorf("duplicate failed. returned %#v", v)
+	} else if product == nil {
+		t.Errorf("unexpected nil value: %#v", product)
 	}
 
 }
@@ -59,19 +67,24 @@ func TestNewFactory_Val(t *testing.T) {
 		Num int
 	}
 
-	p1 := post{}
+	orgl := post{}
 
-	f := server.NewFactory(p1)
-	if v := f.Make(); v == nil {
+	factory := server.NewFactory(orgl)
+
+	if v := factory.Make(); v == nil {
 		t.Errorf("unexpected nil value: %#v", v)
-	} else if _, ok := v.(*post); !ok {
+	} else if product, ok := v.(*post); !ok {
 		t.Errorf("unexpected %#v", v)
+	} else if product == nil {
+		t.Errorf("unexpected nil value: %#v", product)
 	}
 
-	if v := f.MakeSlice(); v == nil {
+	if v := factory.MakeSlice(); v == nil {
 		t.Errorf("unexpected nil value: %#v", v)
-	} else if _, ok := v.(*[]post); !ok {
+	} else if product, ok := v.(*[]post); !ok {
 		t.Errorf("unexpected %#v", v)
+	} else if product == nil {
+		t.Errorf("unexpected nil value: %#v", product)
 	}
 
 }
@@ -83,19 +96,24 @@ func TestNewFactory_Ptr(t *testing.T) {
 		Num int
 	}
 
-	p1 := post{}
+	orgl := post{}
 
-	f := server.NewFactory(&p1)
-	if v := f.Make(); v == nil {
+	factory := server.NewFactory(&orgl)
+
+	if v := factory.Make(); v == nil {
 		t.Errorf("unexpected nil value: %#v", v)
-	} else if _, ok := v.(*post); !ok {
+	} else if product, ok := v.(*post); !ok {
 		t.Errorf("unexpected %#v", v)
+	} else if product == nil {
+		t.Errorf("unexpected nil value: %#v", product)
 	}
 
-	if v := f.MakeSlice(); v == nil {
+	if v := factory.MakeSlice(); v == nil {
 		t.Errorf("unexpected nil value: %#v", v)
-	} else if _, ok := v.(*[]post); !ok {
+	} else if product, ok := v.(*[]post); !ok {
 		t.Errorf("unexpected %#v", v)
+	} else if product == nil {
+		t.Errorf("unexpected nil value: %#v", product)
 	}
 
 }
