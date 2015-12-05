@@ -8,6 +8,18 @@ import (
 	restit "github.com/yookoala/restit/v2"
 )
 
+func TestJSON_IsJSONNum(t *testing.T) {
+	if want, have := true, restit.IsJSONNum([]byte("-1234.56789E+12")); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+	if want, have := true, restit.IsJSONNum([]byte("-1234.56789e+12")); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+	if want, have := false, restit.IsJSONNum([]byte("-1234.56789A+12")); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+}
+
 func TestJSON_Unmarshaler(t *testing.T) {
 	str := dummyJSONStr2()
 	j := &restit.JSON{}
@@ -118,6 +130,10 @@ func TestJSON_Type(t *testing.T) {
 		t.Errorf("expected %s, got %s", want, have)
 	}
 	if want, have := restit.TypeNull, readJSON("null").Type(); want != have {
+		t.Errorf("expected %s, got %s", want, have)
+	}
+
+	if want, have := restit.TypeUnknown, readJSON("404 not found").Type(); want != have {
 		t.Errorf("expected %s, got %s", want, have)
 	}
 }

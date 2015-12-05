@@ -4,7 +4,18 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
+	"regexp"
 )
+
+// reJSONNumber is the regular expression to match
+// any JSON number values
+var reJSONNum = regexp.MustCompile(`^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+\-]?\d+)?$`)
+
+// IsJSONNum test a string and see if it match the
+// JSON definition of number
+func IsJSONNum(b []byte) bool {
+	return reJSONNum.Match(b)
+}
 
 // JSONType represents the different type of JSON values
 // (string, number, object, array, true, false, null)
@@ -74,60 +85,33 @@ func (j *JSON) UnmarshalJSON(b []byte) error {
 // Type returns the JSONType of the containing JSON value
 func (j JSON) Type() JSONType {
 
-	// for nil raw, return TypeUndefined
-	if j.raw == nil {
+	switch {
+	case j.raw == nil:
+		// for nil raw, return TypeUndefined
 		return TypeUndefined
-	}
-
-	// for empty JSON string, return TypeUnknown
-	if len(j.raw) == 0 {
+	case len(j.raw) == 0:
+		// for empty JSON string, return TypeUnknown
 		return TypeUnknown
-	}
-
-	// simply examine the first character
-	// to determine the value type
-	switch j.raw[0] {
-	case '"':
+	case j.raw[0] == '"':
+		// simply examine the first character
+		// to determine the value type
 		return TypeString
-	case '-':
-		fallthrough
-	case '0':
-		fallthrough
-	case '1':
-		fallthrough
-	case '2':
-		fallthrough
-	case '3':
-		fallthrough
-	case '4':
-		fallthrough
-	case '5':
-		fallthrough
-	case '6':
-		fallthrough
-	case '7':
-		fallthrough
-	case '8':
-		fallthrough
-	case '9':
-		return TypeNumber
-	case '{':
+	case j.raw[0] == '{':
+		// simply examine the first character
+		// to determine the value type
 		return TypeObject
-	case '[':
+	case j.raw[0] == '[':
+		// simply examine the first character
+		// to determine the value type
 		return TypeArray
-	}
-
-	// try to match the whole string
-	// if it is not too long
-	if len(j.raw) <= 5 {
-		switch string(j.raw) {
-		case "true":
-			fallthrough
-		case "false":
-			return TypeBool
-		case "null":
-			return TypeNull
-		}
+	case string(j.raw) == "true":
+		fallthrough
+	case string(j.raw) == "false":
+		return TypeBool
+	case string(j.raw) == "null":
+		return TypeNull
+	case IsJSONNum(j.raw):
+		return TypeNumber
 	}
 
 	// return TypeUnknown for all other cases
