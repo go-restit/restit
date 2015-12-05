@@ -38,27 +38,27 @@ func dummyJSONTest(j *restit.JSON) (err error) {
 
 	var n *restit.JSON
 
-	if n, err = j.Get("foo"); err != nil {
-		err = fmt.Errorf("unable to find foo (%s)\nraw: %#v",
-			err.Error(), string(j.Raw()))
+	if n = j.Get("foo"); n.Type() == restit.TypeUndefined {
+		err = fmt.Errorf("unable to find foo\nraw: %#v",
+			string(j.Raw()))
 		return
 	} else if want, have := "bar", n.String(); want != have {
 		err = fmt.Errorf(".foo expected %#v, got %#v", want, have)
 		return
 	}
 
-	if n, err = j.Get("hello"); err != nil {
-		err = fmt.Errorf("unable to find hello (%s)\nraw: %#v",
-			err.Error(), string(j.Raw()))
+	if n = j.Get("hello"); n.Type() == restit.TypeUndefined {
+		err = fmt.Errorf("unable to find hello\nraw: %#v",
+			string(j.Raw()))
 		return
 	} else if want, have := "world", n.String(); want != have {
 		err = fmt.Errorf(".hello expected %#v, got %#v", want, have)
 		return
 	}
 
-	if n, err = j.Get("answer"); err != nil {
-		err = fmt.Errorf("unable to find answer (%s)\nraw: %#v",
-			err.Error(), string(j.Raw()))
+	if n = j.Get("answer"); n.Type() == restit.TypeUndefined {
+		err = fmt.Errorf("unable to find answer\nraw: %#v",
+			string(j.Raw()))
 		return
 	} else if want, have := float64(42), n.Number(); want != have {
 		err = fmt.Errorf(".answer expected %#v, got %#v", want, have)

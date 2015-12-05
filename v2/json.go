@@ -2,7 +2,6 @@ package restit
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 )
@@ -14,8 +13,8 @@ type JSONType int
 
 func (t JSONType) String() string {
 	switch t {
-	case TypeEmpty:
-		return "TypeEmpty"
+	case TypeUndefined:
+		return "TypeUndefined"
 	case TypeString:
 		return "TypeString"
 	case TypeNumber:
@@ -36,10 +35,10 @@ func (t JSONType) String() string {
 // as specified in http://www.json.org/
 // with some exception:
 // 1. true and false are combined as bool for obvious reason; and
-// 2. an extra TypeEmpty for empty JSON strings
+// 2. TypeUnknown for empty strings
 const (
-	TypeUnknown JSONType = -1
-	TypeEmpty   JSONType = iota
+	TypeUnknown   JSONType = -1
+	TypeUndefined JSONType = iota
 	TypeString
 	TypeNumber
 	TypeObject
@@ -75,9 +74,14 @@ func (j *JSON) UnmarshalJSON(b []byte) error {
 // Type returns the JSONType of the containing JSON value
 func (j JSON) Type() JSONType {
 
-	// for empty JSON string, return TypeEmpty
+	// for nil raw, return TypeUndefined
+	if j.raw == nil {
+		return TypeUndefined
+	}
+
+	// for empty JSON string, return TypeUnknown
 	if len(j.raw) == 0 {
-		return TypeEmpty
+		return TypeUnknown
 	}
 
 	// simply examine the first character
@@ -132,16 +136,17 @@ func (j JSON) Type() JSONType {
 
 // Get gets object's inner value.
 // Only works with Object value type
-func (j *JSON) Get(key string) (inner *JSON, err error) {
+func (j *JSON) Get(key string) (inner *JSON) {
 	if j.Type() != TypeObject {
-		err = fmt.Errorf("only support JSON of TypeObject, not %s", j.Type())
+		inner = &JSON{nil}
 		return
 	}
-	vmap := map[string]JSON{}
-	err = j.Unmarshal(&vmap)
 
-	if val, ok := vmap[key]; !ok {
-		err = fmt.Errorf("key not found")
+	vmap := map[string]JSON{}
+	if err := j.Unmarshal(&vmap); err != nil {
+		inner = &JSON{nil} // dump the error
+	} else if val, ok := vmap[key]; !ok {
+		inner = &JSON{nil}
 	} else {
 		inner = &val
 	}

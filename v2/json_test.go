@@ -85,7 +85,10 @@ func TestJSON_Type(t *testing.T) {
 		return j
 	}
 
-	if want, have := restit.TypeEmpty, readJSON("").Type(); want != have {
+	if want, have := restit.TypeUndefined, (&restit.JSON{}).Type(); want != have {
+		t.Errorf("expected %s, got %s", want, have)
+	}
+	if want, have := restit.TypeUnknown, readJSON("").Type(); want != have {
 		t.Errorf("expected %s, got %s", want, have)
 	}
 	if want, have := restit.TypeString, readJSON(`"string"`).Type(); want != have {
@@ -126,15 +129,11 @@ func TestJSON_Get(t *testing.T) {
 		t.Errorf("unexpected error: %#v", err.Error())
 	}
 
-	if _, err := j.Get("notExists"); err == nil {
-		t.Error("failed to trigger error with non-exists key")
-	} else if want, have := "key not found", err.Error(); want != have {
+	if want, have := restit.TypeUndefined, j.Get("notExists").Type(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
 
-	if n, err := j.Get("number"); err != nil {
-		t.Errorf("unexpected error: %#v", err.Error())
-	} else if n == nil {
+	if n := j.Get("number"); n == nil {
 		t.Error("unexpected nil value")
 	} else if want, have := restit.TypeNumber, n.Type(); want != have {
 		t.Errorf("expected %s, got %s", want, have)
@@ -148,9 +147,7 @@ func TestJSON_Get(t *testing.T) {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
 
-	if n, err := j.Get("string"); err != nil {
-		t.Errorf("unexpected error: %#v", err.Error())
-	} else if n == nil {
+	if n := j.Get("string"); n == nil {
 		t.Error("unexpected nil value")
 	} else if want, have := restit.TypeString, n.Type(); want != have {
 		t.Errorf("expected %s, got %s", want, have)
@@ -167,9 +164,7 @@ func TestJSON_Get(t *testing.T) {
 	}
 
 	var nilJ *restit.JSON
-	if n, err := j.Get("arrayOfString"); err != nil {
-		t.Errorf("unexpected error: %#v", err.Error())
-	} else if n == nil {
+	if n := j.Get("arrayOfString"); n == nil {
 		t.Error("unexpected nil value")
 	} else if want, have := restit.TypeArray, n.Type(); want != have {
 		t.Errorf("expected %s, got %s", want, have)
@@ -191,14 +186,12 @@ func TestJSON_Get(t *testing.T) {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
 
-	if n, err := j.Get("object"); err != nil {
-		t.Errorf("unexpected error: %#v", err.Error())
-	} else if n == nil {
+	if n := j.Get("object"); n == nil {
 		t.Error("unexpected nil value")
 	} else if want, have := restit.TypeObject, n.Type(); want != have {
 		t.Errorf("expected %s, got %s", want, have)
-	} else if p, err := n.Get("answer"); err != nil {
-		t.Errorf("unexpected error: %#v", err.Error())
+	} else if p := n.Get("answer"); p == nil {
+		t.Error("unexpected nil value")
 	} else if want, have := restit.TypeNumber, p.Type(); want != have {
 		t.Errorf("expected %s, got %s", want, have)
 	} else if want, have := false, n.Bool(); want != have {
@@ -207,9 +200,7 @@ func TestJSON_Get(t *testing.T) {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
 
-	if n, err := j.Get("true"); err != nil {
-		t.Errorf("unexpected error: %#v", err.Error())
-	} else if n == nil {
+	if n := j.Get("true"); n == nil {
 		t.Error("unexpected nil value")
 	} else if want, have := restit.TypeBool, n.Type(); want != have {
 		t.Errorf("expected %s, got %s", want, have)
@@ -217,9 +208,7 @@ func TestJSON_Get(t *testing.T) {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
 
-	if n, err := j.Get("false"); err != nil {
-		t.Errorf("unexpected error: %#v", err.Error())
-	} else if n == nil {
+	if n := j.Get("false"); n == nil {
 		t.Error("unexpected nil value")
 	} else if want, have := restit.TypeBool, n.Type(); want != have {
 		t.Errorf("expected %s, got %s", want, have)
@@ -229,9 +218,7 @@ func TestJSON_Get(t *testing.T) {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
 
-	if n, err := j.Get("null"); err != nil {
-		t.Errorf("unexpected error: %#v", err.Error())
-	} else if n == nil {
+	if n := j.Get("null"); n == nil {
 		t.Error("unexpected nil value")
 	} else if want, have := restit.TypeNull, n.Type(); want != have {
 		t.Errorf("expected %s, got %s", want, have)
