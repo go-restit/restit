@@ -2,6 +2,7 @@ package restit
 
 import (
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 )
@@ -87,4 +88,71 @@ func (r HTTPResponse) Raw() interface{} {
 func (r HTTPResponse) JSON() (*JSON, error) {
 	reader := r.Body()
 	return ReadJSON(reader)
+}
+
+// CacheResponse returns a new Response
+// which Body() can be read repeatedly
+func CacheResponse(r Response) Response {
+	return &cachedResponse{r, nil}
+}
+
+// CachedResponse wraps a Response and cache the Body() result
+// so it can be called over and over again
+type cachedResponse struct {
+	response     Response
+	cachedReader *cachedReader
+}
+
+// StatusCode implements Response
+func (cr cachedResponse) StatusCode() int {
+	return cr.response.StatusCode()
+}
+
+// Header implements Response
+func (cr cachedResponse) Header() http.Header {
+	return cr.response.Header()
+}
+
+// Body implements Response
+func (cr *cachedResponse) Body() io.Reader {
+	if cr.cachedReader == nil {
+		body, err := ioutil.ReadAll(cr.response.Body())
+		if err == nil {
+			err = io.EOF
+		}
+		cr.cachedReader = &cachedReader{body, err}
+	}
+	return cr.cachedReader.Copy()
+}
+
+// Raw implements Response
+func (cr cachedResponse) Raw() interface{} {
+	return cr.response.Raw()
+}
+
+// JSON implements Response
+func (cr *cachedResponse) JSON() (*JSON, error) {
+	reader := cr.Body()
+	return ReadJSON(reader)
+}
+
+type cachedReader struct {
+	body []byte
+	err  error
+}
+
+func (cr *cachedReader) Read(b []byte) (n int, err error) {
+	copy(b, cr.body)
+	n = len(cr.body)
+	err = cr.err
+	return
+}
+
+func (cr *cachedReader) Copy() io.Reader {
+	reader := &cachedReader{
+		make([]byte, len(cr.body), (cap(cr.body)+1)*2),
+		cr.err,
+	}
+	copy(reader.body, cr.body)
+	return reader
 }

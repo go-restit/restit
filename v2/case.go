@@ -53,6 +53,9 @@ func (c Case) Do() (resp Response, err error) {
 		return
 	}
 
+	// wrap resulting Response with cachedResponse
+	resp = CacheResponse(resp)
+
 	// run all expectations
 	for i, expect := range c.Expectations {
 		if err = expect.Do(c.Context, resp); err != nil {

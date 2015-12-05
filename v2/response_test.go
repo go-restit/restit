@@ -175,3 +175,66 @@ func TestResponse_http_JSON(t *testing.T) {
 		t.Errorf("unexpected error: %#v", err.Error())
 	}
 }
+
+func TestResponse_cached(t *testing.T) {
+
+	msg := RandString(10)
+	requestID := RandString(10)
+
+	w := httptest.NewRecorder()
+	w.Header().Set("X-Request-ID", requestID)
+	w.Write([]byte(msg))
+	w.WriteHeader(http.StatusOK)
+	w.Flush()
+
+	resp := restit.CacheResponse(&restit.HTTPTestResponse{w})
+
+	// read once
+	if result, err := ioutil.ReadAll(resp.Body()); err != nil {
+		t.Errorf("unexpected error: %#v", err.Error())
+	} else if want, have := msg, string(result); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+
+	// read twice
+	if result, err := ioutil.ReadAll(resp.Body()); err != nil {
+		t.Errorf("unexpected error: %#v", err.Error())
+	} else if want, have := msg, string(result); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+
+}
+
+func TestResponse_cached_JSON(t *testing.T) {
+	msg := dummyJSONStr()
+	requestID := RandString(10)
+
+	w := httptest.NewRecorder()
+	w.Header().Set("X-Request-ID", requestID)
+	w.Write([]byte(msg))
+	w.WriteHeader(http.StatusOK)
+	w.Flush()
+
+	resp := restit.CacheResponse(&restit.HTTPTestResponse{w})
+
+	if want, have := http.StatusOK, resp.StatusCode(); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+	if want, have := requestID, resp.Header().Get("X-Request-ID"); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+
+	// test JSON result once
+	if j, err := resp.JSON(); err != nil {
+		t.Errorf("unexpected error: %#v", err.Error())
+	} else if err := dummyJSONTest(j); err != nil {
+		t.Errorf("unexpected error: %#v", err.Error())
+	}
+
+	// test JSON result twice
+	if j, err := resp.JSON(); err != nil {
+		t.Errorf("unexpected error: %#v", err.Error())
+	} else if err := dummyJSONTest(j); err != nil {
+		t.Errorf("unexpected error: %#v", err.Error())
+	}
+}
