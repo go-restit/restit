@@ -1,7 +1,6 @@
 package restit_test
 
 import (
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -64,16 +63,6 @@ func TestResponse_httptest_JSON(t *testing.T) {
 	} else if err := dummyJSONTest(j); err != nil {
 		t.Errorf("unexpected error: %#v", err.Error())
 	}
-}
-
-// dummyCloser warps a Reader and implements ReadCloser
-type dummyCloser struct {
-	io.Reader
-}
-
-// Close implements ReadCloser
-func (dummyCloser) Close() error {
-	return nil
 }
 
 func TestResponse_http(t *testing.T) {

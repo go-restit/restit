@@ -16,23 +16,13 @@ type Response interface {
 	Header() http.Header
 
 	// Body returns the body Reader / ReadCloser
-	Body() io.ReadCloser
+	Body() io.Reader
 
 	// Raw returns the raw response data structure
 	Raw() interface{}
 
 	// JSON returns a JSON decoding the body
 	JSON() (*JSON, error)
-}
-
-// dummyCloser warps a Reader and implements ReadCloser
-type dummyCloser struct {
-	io.Reader
-}
-
-// Close implements ReadCloser
-func (dummyCloser) Close() error {
-	return nil
 }
 
 // HTTPTestResponse wraps a *httptest.ResponseRecorder
@@ -52,8 +42,8 @@ func (r HTTPTestResponse) Header() http.Header {
 }
 
 // Body implements Response
-func (r HTTPTestResponse) Body() io.ReadCloser {
-	return dummyCloser{r.RawResponse.Body}
+func (r HTTPTestResponse) Body() io.Reader {
+	return r.RawResponse.Body
 }
 
 // Raw implements Response
@@ -64,7 +54,6 @@ func (r HTTPTestResponse) Raw() interface{} {
 // JSON implements Response
 func (r HTTPTestResponse) JSON() (*JSON, error) {
 	reader := r.Body()
-	defer reader.Close()
 	return ReadJSON(reader)
 }
 
@@ -85,7 +74,7 @@ func (r HTTPResponse) Header() http.Header {
 }
 
 // Body implements Response
-func (r HTTPResponse) Body() io.ReadCloser {
+func (r HTTPResponse) Body() io.Reader {
 	return r.RawResponse.Body
 }
 
@@ -97,6 +86,5 @@ func (r HTTPResponse) Raw() interface{} {
 // JSON implements Response
 func (r HTTPResponse) JSON() (*JSON, error) {
 	reader := r.Body()
-	defer reader.Close()
 	return ReadJSON(reader)
 }
