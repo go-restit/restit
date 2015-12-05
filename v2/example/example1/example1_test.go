@@ -194,6 +194,7 @@ func TestServer(t *testing.T) {
 
 	testCreate1 := service.Create(p1).
 		Expect(statusCodeIs(http.StatusOK)).
+		Expect(lengthIs(noun.Plural(), 1)).
 		Expect(nthItemIsCreatedFrom(noun.Plural(), 0, p1))
 	if _, err := testCreate1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
@@ -204,6 +205,7 @@ func TestServer(t *testing.T) {
 
 	testRetrieve1 := service.Retrieve(p1, p1.ID).
 		Expect(statusCodeIs(http.StatusOK)).
+		Expect(lengthIs(noun.Plural(), 1)).
 		Expect(nthItemIsEqualTo(noun.Plural(), 0, p1))
 	if _, err := testRetrieve1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
@@ -214,6 +216,7 @@ func TestServer(t *testing.T) {
 
 	testCreate2 := service.Create(p2).
 		Expect(statusCodeIs(http.StatusOK)).
+		Expect(lengthIs(noun.Plural(), 1)).
 		Expect(nthItemIsCreatedFrom(noun.Plural(), 0, p2))
 	if _, err := testCreate2.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
@@ -224,6 +227,7 @@ func TestServer(t *testing.T) {
 
 	testUpdate1 := service.Update(p1b, p1.ID).
 		Expect(statusCodeIs(http.StatusOK)).
+		Expect(lengthIs(noun.Plural(), 1)).
 		Expect(nthItemIsUpdatedFrom(noun.Plural(), 0, p1b))
 	if _, err := testUpdate1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
@@ -244,6 +248,7 @@ func TestServer(t *testing.T) {
 
 	testDelete1 := service.Delete(p1b.ID).
 		Expect(statusCodeIs(http.StatusOK)).
+		Expect(lengthIs(noun.Plural(), 1)).
 		Expect(nthItemIsEqualTo(noun.Plural(), 0, p1b))
 	if _, err := testDelete1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
@@ -264,6 +269,7 @@ func TestServer(t *testing.T) {
 
 	testDelete2 := service.Delete(p2.ID).
 		Expect(statusCodeIs(http.StatusOK)).
+		Expect(lengthIs(noun.Plural(), 1)).
 		Expect(nthItemIsEqualTo(noun.Plural(), 0, p2))
 	if _, err := testDelete2.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
