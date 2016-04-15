@@ -3,7 +3,7 @@ package restit_test
 import (
 	"testing"
 
-	restit "github.com/yookoala/restit/v2"
+	restit "github.com/go-restit/restit/v2"
 )
 
 func TestContextError_EmptyString(t *testing.T) {

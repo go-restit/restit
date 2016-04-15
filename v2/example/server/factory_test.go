@@ -3,7 +3,7 @@ package server_test
 import (
 	"testing"
 
-	"github.com/yookoala/restit/v2/example/server"
+	"github.com/go-restit/restit/v2/example/server"
 )
 
 func TestNewPtr(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yookoala/restit/v2/example/server"
+	"github.com/go-restit/restit/v2/example/server"
 )
 
 type post struct {

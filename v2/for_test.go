@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/yookoala/restit/v2"
+	"github.com/go-restit/restit/v2"
 )
 
 func init() {

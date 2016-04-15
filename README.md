@@ -1,7 +1,7 @@
 RESTit
 ======
 
-![master build test result](https://api.travis-ci.org/yookoala/restit.svg?branch=master)
+![master build test result](https://api.travis-ci.org/go-restit/restit.svg?branch=master)
 
 A Go micro-framework to help writing RESTful API integration test
 
@@ -28,7 +28,7 @@ Install
 
 Just like installing other golang packages:
 
-    $ go get github.com/yookoala/restit
+    $ go get github.com/go-restit/restit
 
 
 How to Use
@@ -90,7 +90,7 @@ Write Your Tests
 
 You can then test your RESTful API like this:
 
-    import "github.com/yookoala/restit"
+    import "github.com/go-restit/restit"
 
     // create a tester for your stuffAPI
     // first parameter is a human readable name that will
@@ -214,6 +214,6 @@ Bug Reports
 -----------
 
 To report issue, please visit the
-[issue tracker](https://github.com/yookoala/restit/issues).
+[issue tracker](https://github.com/go-restit/restit/issues).
 
 And of course, patches and pull requests are most welcome.

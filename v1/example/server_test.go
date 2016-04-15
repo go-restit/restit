@@ -1,7 +1,7 @@
 package example
 
 import (
-	restit "github.com/yookoala/restit/v1"
+	restit "github.com/go-restit/restit/v1"
 
 	"net/http"
 	"net/http/httptest"

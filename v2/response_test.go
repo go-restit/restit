@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	restit "github.com/yookoala/restit/v2"
+	restit "github.com/go-restit/restit/v2"
 )
 
 func TestResponse_httptest(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	restit "github.com/yookoala/restit/v2"
+	restit "github.com/go-restit/restit/v2"
 )
 
 func TestRequest(t *testing.T) {

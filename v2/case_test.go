@@ -9,7 +9,7 @@ import (
 
 	"golang.org/x/net/context"
 
-	restit "github.com/yookoala/restit/v2"
+	restit "github.com/go-restit/restit/v2"
 )
 
 type ctxKey int

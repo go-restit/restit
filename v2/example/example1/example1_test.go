@@ -7,8 +7,8 @@ import (
 
 	"golang.org/x/net/context"
 
-	restit "github.com/yookoala/restit/v2"
-	"github.com/yookoala/restit/v2/example/example1"
+	restit "github.com/go-restit/restit/v2"
+	"github.com/go-restit/restit/v2/example/example1"
 )
 
 func TestServer(t *testing.T) {

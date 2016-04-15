@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	restit "github.com/yookoala/restit/v2"
+	restit "github.com/go-restit/restit/v2"
 )
 
 func TestJSON_IsJSONNum(t *testing.T) {

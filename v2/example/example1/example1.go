@@ -3,7 +3,7 @@ package example1
 import (
 	"time"
 
-	"github.com/yookoala/restit/v2/example/server"
+	"github.com/go-restit/restit/v2/example/server"
 )
 
 // Post is an implementation of Storable

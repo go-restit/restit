@@ -79,7 +79,7 @@
 
 		You can then test your RESTful API like this:
 
-		import "github.com/yookoala/restit"
+		import restit "github.com/go-restit/restit/v1"
 
 		// create a tester for your stuff
 		// first parameter is a human readable name that will
