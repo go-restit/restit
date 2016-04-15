@@ -28,6 +28,20 @@ type Case struct {
 	Expectations []Expectation
 }
 
+// AddHeader add given header key-value pair to request
+func (c *Case) AddHeader(key, value string) *Case {
+	c.Request.Header.Add(key, value)
+	return c
+}
+
+// AddQuery add given query key-value pair to request
+func (c *Case) AddQuery(key, value string) *Case {
+	q := c.Request.URL.Query()
+	q.Add(key, value)
+	c.Request.URL.RawQuery = q.Encode()
+	return c
+}
+
 // Expect appends an expectation to the Case
 func (c *Case) Expect(exp Expectation) *Case {
 	c.Expectations = append(c.Expectations, exp)

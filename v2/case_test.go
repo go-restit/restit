@@ -35,6 +35,45 @@ func getTestHandler() (fn restit.CaseHandlerFunc, done <-chan int) {
 	return
 }
 
+func TestCase_AddHeader(t *testing.T) {
+	req, err := http.NewRequest("GET", "/foo/bar", nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %s", err)
+	}
+
+	testCase := &restit.Case{
+		Request: req,
+	}
+	if want, have := "", testCase.Request.Header.Get("hello"); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+
+	testCase.AddHeader("hello", "world")
+	if want, have := "world", testCase.Request.Header.Get("hello"); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+}
+
+func TestCase_AddQuery(t *testing.T) {
+	req, err := http.NewRequest("GET", "/foo/bar?foo=bar", nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %s", err)
+	}
+
+	testCase := &restit.Case{
+		Request: req,
+	}
+	if want, have := "", testCase.Request.URL.Query().Get("hello"); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+
+	testCase.AddQuery("hello", "world")
+	if want, have := "world", testCase.Request.URL.Query().Get("hello"); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+		t.Logf("testCase.Request.URL: %#v", testCase.Request.URL)
+	}
+}
+
 func TestCase_EmptyRequest(t *testing.T) {
 	testHandler, _ := getTestHandler()
 	testCase := restit.Case{
