@@ -45,3 +45,17 @@ func TestContextError_AppendPrepend(t *testing.T) {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
 }
+
+func TestExpandError(t *testing.T) {
+	err := restit.NewContextError("dummy %s", "error")
+	err.Append("foo", "bar")
+	if want, have := `message="dummy error" foo="bar"`, err.Log(); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+
+	var err2 error = err
+	err3 := restit.ExpandError(err2)
+	if want, have := `message="dummy error" foo="bar"`, err3.Log(); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+}

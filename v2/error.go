@@ -43,6 +43,16 @@ type keyval struct {
 	weight int
 }
 
+// ExpandError expands errors to ContextError
+func ExpandError(err error) ContextError {
+	switch ctxErr := err.(type) {
+	case *contextError:
+		return ctxErr
+	default:
+		return NewContextError(err.Error())
+	}
+}
+
 // contextError is the default implementation of ContextError
 type contextError []keyval
 
