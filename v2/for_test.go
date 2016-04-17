@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/go-restit/restit/v2"
+	"github.com/go-restit/lzjson"
 )
 
 func init() {
@@ -32,13 +32,13 @@ func dummyJSONStr() string {
 	}`
 }
 
-// dummyJSONTest tests the *restit.JSON created from json string
+// dummyJSONTest tests the lzjson.Node created from json string
 // by dummyJSONStr(). Returns error if the test fail
-func dummyJSONTest(j *restit.JSON) (err error) {
+func dummyJSONTest(j lzjson.Node) (err error) {
 
-	var n *restit.JSON
+	var n lzjson.Node
 
-	if n = j.Get("foo"); n.Type() == restit.TypeUndefined {
+	if n = j.Get("foo"); n.Type() == lzjson.TypeUndefined {
 		err = fmt.Errorf("unable to find foo\nraw: %#v",
 			string(j.Raw()))
 		return
@@ -47,7 +47,7 @@ func dummyJSONTest(j *restit.JSON) (err error) {
 		return
 	}
 
-	if n = j.Get("hello"); n.Type() == restit.TypeUndefined {
+	if n = j.Get("hello"); n.Type() == lzjson.TypeUndefined {
 		err = fmt.Errorf("unable to find hello\nraw: %#v",
 			string(j.Raw()))
 		return
@@ -56,7 +56,7 @@ func dummyJSONTest(j *restit.JSON) (err error) {
 		return
 	}
 
-	if n = j.Get("answer"); n.Type() == restit.TypeUndefined {
+	if n = j.Get("answer"); n.Type() == lzjson.TypeUndefined {
 		err = fmt.Errorf("unable to find answer\nraw: %#v",
 			string(j.Raw()))
 		return

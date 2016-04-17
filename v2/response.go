@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+
+	"github.com/go-restit/lzjson"
 )
 
 // Response is the generic response of any HTTP handle results
@@ -23,7 +25,7 @@ type Response interface {
 	Raw() interface{}
 
 	// JSON returns a JSON decoding the body
-	JSON() (*JSON, error)
+	JSON() (lzjson.Node, error)
 }
 
 // HTTPTestResponse wraps a *httptest.ResponseRecorder
@@ -53,9 +55,9 @@ func (r HTTPTestResponse) Raw() interface{} {
 }
 
 // JSON implements Response
-func (r HTTPTestResponse) JSON() (*JSON, error) {
+func (r HTTPTestResponse) JSON() (lzjson.Node, error) {
 	reader := r.Body()
-	return ReadJSON(reader)
+	return lzjson.Decode(reader)
 }
 
 // HTTPResponse wraps a *http.Response
@@ -85,9 +87,9 @@ func (r HTTPResponse) Raw() interface{} {
 }
 
 // JSON implements Response
-func (r HTTPResponse) JSON() (*JSON, error) {
+func (r HTTPResponse) JSON() (lzjson.Node, error) {
 	reader := r.Body()
-	return ReadJSON(reader)
+	return lzjson.Decode(reader)
 }
 
 // CacheResponse returns a new Response
@@ -131,9 +133,9 @@ func (cr cachedResponse) Raw() interface{} {
 }
 
 // JSON implements Response
-func (cr *cachedResponse) JSON() (*JSON, error) {
+func (cr *cachedResponse) JSON() (lzjson.Node, error) {
 	reader := cr.Body()
-	return ReadJSON(reader)
+	return lzjson.Decode(reader)
 }
 
 type cachedReader struct {
