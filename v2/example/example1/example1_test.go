@@ -7,6 +7,7 @@ import (
 
 	"golang.org/x/net/context"
 
+	"github.com/go-restit/lzjson"
 	restit "github.com/go-restit/restit/v2"
 	"github.com/go-restit/restit/v2/example/example1"
 )
@@ -25,12 +26,12 @@ func TestServer(t *testing.T) {
 
 	// helper function to write expectations
 
-	nthIs := func(name string, n int, test func(*restit.JSON) error) func(context.Context, restit.Response) error {
+	nthIs := func(name string, n int, test func(lzjson.Node) error) func(context.Context, restit.Response) error {
 		return func(ctx context.Context, resp restit.Response) (err error) {
 			proto, err := resp.JSON()
 			if err != nil {
 				return
-			} else if want, have := restit.TypeObject, proto.Type(); want != have {
+			} else if want, have := lzjson.TypeObject, proto.Type(); want != have {
 				ctxErr := restit.NewContextError("expected %s, got %s", want, have)
 				ctxErr.Prepend("ref", "response")
 				err = ctxErr
@@ -39,7 +40,7 @@ func TestServer(t *testing.T) {
 			list := proto.Get(name)
 			if err != nil {
 				return
-			} else if want, have := restit.TypeArray, list.Type(); want != have {
+			} else if want, have := lzjson.TypeArray, list.Type(); want != have {
 				ctxErr := restit.NewContextError("expected %s, got %s", want, have)
 				ctxErr.Prepend("ref", "response."+name)
 				ctxErr.Append("response", string(proto.Raw()))
@@ -64,8 +65,8 @@ func TestServer(t *testing.T) {
 		}
 	}
 
-	equals := func(p1 example1.Post) func(*restit.JSON) error {
-		return func(j *restit.JSON) (err error) {
+	equals := func(p1 example1.Post) func(lzjson.Node) error {
+		return func(j lzjson.Node) (err error) {
 			p2 := example1.Post{}
 			j.Unmarshal(&p2)
 			if want, have := p1.ID, p2.ID; want != have {
@@ -114,7 +115,7 @@ func TestServer(t *testing.T) {
 				proto, err := resp.JSON()
 				if err != nil {
 					return
-				} else if want, have := restit.TypeObject, proto.Type(); want != have {
+				} else if want, have := lzjson.TypeObject, proto.Type(); want != have {
 					ctxErr := restit.NewContextError("expected %s, got %s", want, have)
 					ctxErr.Prepend("ref", "response")
 					err = ctxErr
@@ -124,7 +125,7 @@ func TestServer(t *testing.T) {
 				list := proto.Get(name)
 				if err != nil {
 					return
-				} else if want, have := restit.TypeArray, list.Type(); want != have {
+				} else if want, have := lzjson.TypeArray, list.Type(); want != have {
 					ctxErr := restit.NewContextError("expected %s, got %s", want, have)
 					ctxErr.Prepend("ref", "response."+name)
 					ctxErr.Append("response", string(proto.Raw()))
