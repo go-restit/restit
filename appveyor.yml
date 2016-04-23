@@ -1,0 +1,45 @@
+version: "build #{build}"
+
+platform: x64
+
+skip_tags: true
+
+clone_folder: c:\gopath\src\github.com\go-restit\restit
+
+# environment variable matrix
+environment:
+  GOPATH: c:\gopath
+  GOINSTALLERHOST: https://storage.googleapis.com/golang
+  GOPKG: github.com/go-restit/restit
+
+  matrix:
+
+  - GOVERSION: 1.3
+    GOINSTALLER: go1.3.windows-amd64.msi
+
+  - GOVERSION: 1.4
+    GOINSTALLER: go1.4.windows-amd64.msi
+
+  - GOVERSION: 1.5
+    GOINSTALLER: go1.5.windows-amd64.msi
+
+  - GOVERSION: 1.6
+    GOINSTALLER: go1.6.windows-amd64.msi
+
+# install and test script
+install:
+  - set PATH=%GOPATH%\bin;c:\go\bin;%PATH%
+  - rmdir c:\go /s /q
+  - appveyor DownloadFile %GOINSTALLERHOST%/%GOINSTALLER%
+  - msiexec /i %GOINSTALLER% /q
+  - go version
+  - go env
+  - echo %cd%
+  - go get -v -d -t %GOPKG%/...
+
+test_script:
+  - go test -v -cover ./...
+
+# disable build and deploy phase
+build: off
+deploy: off
