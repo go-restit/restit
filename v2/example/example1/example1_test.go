@@ -204,7 +204,7 @@ func TestServer(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	testRetrieve1 := service.Retrieve(p1, p1.ID).
+	testRetrieve1 := service.Retrieve(p1.ID).
 		Expect(statusCodeIs(http.StatusOK)).
 		Expect(lengthIs(noun.Plural(), 1)).
 		Expect(nthItemIsEqualTo(noun.Plural(), 0, p1))

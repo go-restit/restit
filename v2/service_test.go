@@ -84,7 +84,7 @@ func dummyTestSuite(service *restit.Service, paths restit.Paths) (err error) {
 
 	err = func() (err error) {
 		postID := RandString(20)
-		testCase := service.Retrieve(post{ID: postID, Name: RandString(20)}, postID)
+		testCase := service.Retrieve(postID)
 		if req := testCase.Request; req == nil {
 			err = fmt.Errorf("[retrieve][request] empty")
 		} else if want, have := paths.Singular(postID), req.URL.String(); want != have {

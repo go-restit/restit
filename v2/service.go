@@ -96,8 +96,8 @@ func (s Service) Update(payload interface{}, v ...string) *Case {
 
 // Retrieve sends a GET request
 // to singular path and examine the result
-func (s Service) Retrieve(payload interface{}, v ...string) *Case {
-	req, err := NewRequest("GET", s.Paths.Singular(v...), payload)
+func (s Service) Retrieve(v ...string) *Case {
+	req, err := NewRequest("GET", s.Paths.Singular(v...), nil)
 	if err != nil {
 		panic(err)
 	}
