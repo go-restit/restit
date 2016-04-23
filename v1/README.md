@@ -161,7 +161,7 @@ securityInfo := napping.Params{
 // 1. create the stuff
 test = stuffAPI.
     Create(&stuffToCreate).
-AddHeader("Authorization", "Some token").
+    AddHeader("Authorization", "Some token").
     WithParams(&securityInfo).
     WithResponseAs(&response).
     ExpectResultCount(1).
@@ -172,7 +172,7 @@ AddHeader("Authorization", "Some token").
         func (r Response) error {
         // some custom test you may want to run
         // ...
-    })
+        })
 
 result, err := test.Run()
 if err != nil {
