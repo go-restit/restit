@@ -1,15 +1,20 @@
-RESTit
-======
-
-![master build test result](https://api.travis-ci.org/go-restit/restit.svg?branch=master)
+# RESTit [![Godoc][godoc-badge]][godoc] [![Travis test][travis-badge]][travis] [![Appveyor test][appveyor-badge]][appveyor]
 
 A Go micro-framework to help writing RESTful API integration test
 
-Package RESTit provides helps to those who want to write an 
+Package RESTit provides helps to those who want to write an
 integration test program for their JSON-based RESTful APIs.
 
 The aim is to make these integration readable highly re-usable,
 and yet easy to modify.
+
+[godoc]: https://godoc.org/github.com/go-restit/restit
+[godoc-badge]: https://godoc.org/github.com/go-restit/restit?status.svg
+[travis]: https://travis-ci.org/go-restit/restit?branch=master
+[travis-badge]: https://api.travis-ci.org/go-restit/restit.svg?branch=master
+[appveyor]: https://ci.appveyor.com/project/yookoala/restit?branch=master
+[appveyor-badge]: https://ci.appveyor.com/api/projects/status/github/go-restit/restit?branch=master&svg=true
+
 
 
 Dependencies
@@ -35,7 +40,7 @@ How to Use
 ----------
 
 To use, you first have to implement the `TestRespond`
-interface for the REST server response that you're 
+interface for the REST server response that you're
 expecting.
 
 In Go, json contents are usually unmarshaled to structs.
@@ -145,7 +150,7 @@ You can then test your RESTful API like this:
         // you may add more verbose output for
         // inspection
         fmt.Printf("Failed creating stuff!!!!\n")
-        fmt.Printf("Please inspect the Raw Response: " 
+        fmt.Printf("Please inspect the Raw Response: "
                 + result.RawText())
 
         // or you can simply:
