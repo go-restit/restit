@@ -15,14 +15,11 @@ import (
 func TestServer(t *testing.T) {
 
 	baseURL := "/dummy/api"
-	noun := restit.NewNoun("post", "posts")
-	h := example1.PostServer()(baseURL,
-		noun.Singular(), noun.Plural())
+	h := example1.PostServer()(baseURL, "post", "posts")
 
 	// create HTTPService to interact with
 	// the server
-	paths, _ := restit.NewPaths(baseURL, noun)
-	service := restit.NewHTTPTestService(paths, h)
+	service := restit.NewHTTPTestService(baseURL, h)
 
 	// helper function to write expectations
 
@@ -183,9 +180,9 @@ func TestServer(t *testing.T) {
 
 	// the tests
 
-	testList1 := service.List().
+	testList1 := service.List("/posts").
 		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs(noun.Plural(), 0))
+		Expect(lengthIs("posts", 0))
 	if _, err := testList1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -193,10 +190,10 @@ func TestServer(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	testCreate1 := service.Create(p1).
+	testCreate1 := service.Create(p1, "/posts").
 		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs(noun.Plural(), 1)).
-		Expect(nthItemIsCreatedFrom(noun.Plural(), 0, p1))
+		Expect(lengthIs("posts", 1)).
+		Expect(nthItemIsCreatedFrom("posts", 0, p1))
 	if _, err := testCreate1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -204,10 +201,10 @@ func TestServer(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	testRetrieve1 := service.Retrieve(p1.ID).
+	testRetrieve1 := service.Retrieve("/post/" + p1.ID).
 		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs(noun.Plural(), 1)).
-		Expect(nthItemIsEqualTo(noun.Plural(), 0, p1))
+		Expect(lengthIs("posts", 1)).
+		Expect(nthItemIsEqualTo("posts", 0, p1))
 	if _, err := testRetrieve1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -215,10 +212,10 @@ func TestServer(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	testCreate2 := service.Create(p2).
+	testCreate2 := service.Create(p2, "/posts").
 		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs(noun.Plural(), 1)).
-		Expect(nthItemIsCreatedFrom(noun.Plural(), 0, p2))
+		Expect(lengthIs("posts", 1)).
+		Expect(nthItemIsCreatedFrom("posts", 0, p2))
 	if _, err := testCreate2.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -226,10 +223,10 @@ func TestServer(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	testUpdate1 := service.Update(p1b, p1.ID).
+	testUpdate1 := service.Update(p1b, "/post/"+p1.ID).
 		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs(noun.Plural(), 1)).
-		Expect(nthItemIsUpdatedFrom(noun.Plural(), 0, p1b))
+		Expect(lengthIs("posts", 1)).
+		Expect(nthItemIsUpdatedFrom("posts", 0, p1b))
 	if _, err := testUpdate1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -237,9 +234,9 @@ func TestServer(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	testList2 := service.List().
+	testList2 := service.List("/posts").
 		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs(noun.Plural(), 2))
+		Expect(lengthIs("posts", 2))
 	if _, err := testList2.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -247,10 +244,10 @@ func TestServer(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	testDelete1 := service.Delete(p1b.ID).
+	testDelete1 := service.Delete("/post/" + p1b.ID).
 		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs(noun.Plural(), 1)).
-		Expect(nthItemIsEqualTo(noun.Plural(), 0, p1b))
+		Expect(lengthIs("posts", 1)).
+		Expect(nthItemIsEqualTo("posts", 0, p1b))
 	if _, err := testDelete1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -258,9 +255,9 @@ func TestServer(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	testList3 := service.List().
+	testList3 := service.List("/posts").
 		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs(noun.Plural(), 1))
+		Expect(lengthIs("posts", 1))
 	if _, err := testList3.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -268,10 +265,10 @@ func TestServer(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	testDelete2 := service.Delete(p2.ID).
+	testDelete2 := service.Delete("/post/" + p2.ID).
 		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs(noun.Plural(), 1)).
-		Expect(nthItemIsEqualTo(noun.Plural(), 0, p2))
+		Expect(lengthIs("posts", 1)).
+		Expect(nthItemIsEqualTo("posts", 0, p2))
 	if _, err := testDelete2.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -279,9 +276,9 @@ func TestServer(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	testList4 := service.List().
+	testList4 := service.List("/posts").
 		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs(noun.Plural(), 0))
+		Expect(lengthIs("posts", 0))
 	if _, err := testList4.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())

@@ -3,6 +3,8 @@ package restit
 import (
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"path"
 )
 
 // HTTPHandler implements CaseHandlerFunc
@@ -19,9 +21,10 @@ func HTTPHandler(req *http.Request) (resp Response, err error) {
 
 // NewHTTPService create a normal HTTP service to a real
 // HTTP server
-func NewHTTPService(paths Paths) *Service {
+func NewHTTPService(rawURL string) *Service {
+	baseURL, _ := url.Parse(rawURL)
 	return &Service{
-		Paths:   paths,
+		BaseURL: baseURL,
 		Handler: CaseHandlerFunc(HTTPHandler),
 	}
 }
@@ -38,9 +41,10 @@ func HTTPTestHandler(handler http.Handler) func(*http.Request) (Response, error)
 
 // NewHTTPTestService create a dummy service based on httptest.Recorder
 // as request handler
-func NewHTTPTestService(paths Paths, handler http.Handler) *Service {
+func NewHTTPTestService(rawURL string, handler http.Handler) *Service {
+	baseURL, _ := url.Parse(rawURL)
 	return &Service{
-		Paths:   paths,
+		BaseURL: baseURL,
 		Handler: CaseHandlerFunc(HTTPTestHandler(handler)),
 	}
 }
@@ -48,76 +52,60 @@ func NewHTTPTestService(paths Paths, handler http.Handler) *Service {
 // Service provides method to interact with a RESTful service
 // based on the given Paths value
 type Service struct {
-	Paths   Paths
+	BaseURL *url.URL
 	Handler CaseHandler
+}
+
+// NewCase creates a new Case struct with
+func (s Service) NewCase(method string, payload interface{}, paths ...string) *Case {
+
+	// formulate request URL
+	requestURL, err := url.Parse(s.BaseURL.String())
+	if err != nil {
+		panic(err)
+	}
+	if len(paths) > 0 {
+		requestURL.Path = path.Join(append([]string{requestURL.Path}, paths...)...)
+	}
+
+	// formulate request
+	req, err := NewRequest(method, requestURL.String(), payload)
+	if err != nil {
+		panic(err)
+	}
+
+	return &Case{
+		Request: req,
+		Handler: s.Handler,
+	}
 }
 
 // List sends a GET request
 // to plural path and examine the result
-func (s Service) List(v ...string) *Case {
-	req, err := NewRequest("GET", s.Paths.Plural(v...), nil)
-	if err != nil {
-		panic(err)
-	}
-
-	return &Case{
-		Request: req,
-		Handler: s.Handler,
-	}
+func (s Service) List(paths ...string) *Case {
+	return s.NewCase("GET", nil, paths...)
 }
 
 // Create sends a POST request (with JSON encoded payload)
 // to plural path and examine the result
-func (s Service) Create(payload interface{}, v ...string) *Case {
-	req, err := NewRequest("POST", s.Paths.Plural(v...), payload)
-	if err != nil {
-		panic(err)
-	}
-
-	return &Case{
-		Request: req,
-		Handler: s.Handler,
-	}
+func (s Service) Create(payload interface{}, paths ...string) *Case {
+	return s.NewCase("POST", payload, paths...)
 }
 
 // Update sends a PUT request (wtih JSON encoded payload)
 // to singular path and examine the result
-func (s Service) Update(payload interface{}, v ...string) *Case {
-	req, err := NewRequest("PUT", s.Paths.Singular(v...), payload)
-	if err != nil {
-		panic(err)
-	}
-
-	return &Case{
-		Request: req,
-		Handler: s.Handler,
-	}
+func (s Service) Update(payload interface{}, paths ...string) *Case {
+	return s.NewCase("PUT", payload, paths...)
 }
 
 // Retrieve sends a GET request
 // to singular path and examine the result
-func (s Service) Retrieve(v ...string) *Case {
-	req, err := NewRequest("GET", s.Paths.Singular(v...), nil)
-	if err != nil {
-		panic(err)
-	}
-
-	return &Case{
-		Request: req,
-		Handler: s.Handler,
-	}
+func (s Service) Retrieve(paths ...string) *Case {
+	return s.NewCase("GET", nil, paths...)
 }
 
 // Delete sends a DELETE request
 // to singular path and examine the result
-func (s Service) Delete(v ...string) *Case {
-	req, err := NewRequest("DELETE", s.Paths.Singular(v...), nil)
-	if err != nil {
-		panic(err)
-	}
-
-	return &Case{
-		Request: req,
-		Handler: s.Handler,
-	}
+func (s Service) Delete(paths ...string) *Case {
+	return s.NewCase("DELETE", nil, paths...)
 }
