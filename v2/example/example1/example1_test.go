@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"testing"
 
-	"golang.org/x/net/context"
-
 	"github.com/go-restit/lzjson"
 	restit "github.com/go-restit/restit/v2"
 	"github.com/go-restit/restit/v2/example/example1"
@@ -22,45 +20,6 @@ func TestServer(t *testing.T) {
 	service := restit.NewHTTPTestService(baseURL, h)
 
 	// helper function to write expectations
-
-	nthIs := func(name string, n int, test func(lzjson.Node) error) func(context.Context, restit.Response) error {
-		return func(ctx context.Context, resp restit.Response) (err error) {
-			proto, err := resp.JSON()
-			if err != nil {
-				return
-			} else if want, have := lzjson.TypeObject, proto.Type(); want != have {
-				ctxErr := restit.NewContextError("expected %s, got %s", want, have)
-				ctxErr.Prepend("ref", "response")
-				err = ctxErr
-				return
-			}
-			list := proto.Get(name)
-			if err != nil {
-				return
-			} else if want, have := lzjson.TypeArray, list.Type(); want != have {
-				ctxErr := restit.NewContextError("expected %s, got %s", want, have)
-				ctxErr.Prepend("ref", "response."+name)
-				ctxErr.Append("response", string(proto.Raw()))
-				err = ctxErr
-				return
-			} else if want, have := n, list.Len(); have <= want {
-				ctxErr := restit.NewContextError("expected <= %#v, got %#v", want, have)
-				ctxErr.Prepend("ref", "response."+name)
-				ctxErr.Append("response", string(proto.Raw()))
-				err = ctxErr
-			}
-
-			if nth := list.GetN(n); nth != nil {
-				return test(nth)
-			}
-
-			ctxErr := restit.NewContextError("unexpected nil value")
-			ctxErr.Prepend("ref", fmt.Sprintf("response.%s[%d]", name, n))
-			ctxErr.Append("response", string(proto.Raw()))
-			err = ctxErr
-			return
-		}
-	}
 
 	equals := func(p1 example1.Post) func(lzjson.Node) error {
 		return func(j lzjson.Node) (err error) {
@@ -90,77 +49,6 @@ func TestServer(t *testing.T) {
 	isCreatedFrom := equals
 	isUpdatedFrom := equals
 
-	// generic expectations ---
-
-	statusCodeIs := func(n int) restit.Expectation {
-		return restit.Describe(
-			fmt.Sprintf("status code is %d", n),
-			func(ctx context.Context, resp restit.Response) (err error) {
-				if want, have := n, resp.StatusCode(); want != have {
-					ctxErr := restit.NewContextError("expected %d, got %d", want, have)
-					ctxErr.Prepend("ref", "header status code")
-					err = ctxErr
-				}
-				return
-			})
-	}
-
-	lengthIs := func(name string, n int) restit.Expectation {
-		return restit.Describe(
-			fmt.Sprintf("list length is %d", n),
-			func(ctx context.Context, resp restit.Response) (err error) {
-				proto, err := resp.JSON()
-				if err != nil {
-					return
-				} else if want, have := lzjson.TypeObject, proto.Type(); want != have {
-					ctxErr := restit.NewContextError("expected %s, got %s", want, have)
-					ctxErr.Prepend("ref", "response")
-					err = ctxErr
-					return
-				}
-
-				list := proto.Get(name)
-				if err != nil {
-					return
-				} else if want, have := lzjson.TypeArray, list.Type(); want != have {
-					ctxErr := restit.NewContextError("expected %s, got %s", want, have)
-					ctxErr.Prepend("ref", "response."+name)
-					ctxErr.Append("response", string(proto.Raw()))
-					err = ctxErr
-					return
-				}
-
-				if want, have := n, list.Len(); want != have {
-					ctxErr := restit.NewContextError("expected %#v, got %#v", want, have)
-					ctxErr.Prepend("ref", "response."+name+".length")
-					err = ctxErr
-					return
-				}
-
-				return
-			})
-	}
-
-	nthItemIsCreatedFrom := func(name string, n int, payload example1.Post) restit.Expectation {
-		return restit.Describe(
-			fmt.Sprintf("item #%d is created from payload", n),
-			nthIs(name, n, isCreatedFrom(payload)))
-	}
-
-	nthItemIsUpdatedFrom := func(name string, n int, payload example1.Post) restit.Expectation {
-		return restit.Describe(
-			fmt.Sprintf("item #%d is created from payload", n),
-			nthIs(name, n, isUpdatedFrom(payload)))
-	}
-
-	nthItemIsEqualTo := func(name string, n int, payload example1.Post) restit.Expectation {
-		return restit.Describe(
-			fmt.Sprintf("item #%d is created from payload", n),
-			nthIs(name, n, equals(payload)))
-	}
-
-	// generic expectations --- end
-
 	// some dummy Post to test with
 	p1 := example1.Post{
 		ID:    "post-1",
@@ -181,8 +69,8 @@ func TestServer(t *testing.T) {
 	// the tests
 
 	testList1 := service.List("/posts").
-		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs("posts", 0))
+		Expect(restit.StatusCodeIs(http.StatusOK)).
+		Expect(restit.LengthIs("posts", 0))
 	if _, err := testList1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -191,9 +79,10 @@ func TestServer(t *testing.T) {
 	}
 
 	testCreate1 := service.Create(p1, "/posts").
-		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs("posts", 1)).
-		Expect(nthItemIsCreatedFrom("posts", 0, p1))
+		Expect(restit.StatusCodeIs(http.StatusOK)).
+		Expect(restit.LengthIs("posts", 1)).
+		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
+			"item #0 returned is created from payload", isCreatedFrom(p1))))
 	if _, err := testCreate1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -202,9 +91,10 @@ func TestServer(t *testing.T) {
 	}
 
 	testRetrieve1 := service.Retrieve("/post/" + p1.ID).
-		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs("posts", 1)).
-		Expect(nthItemIsEqualTo("posts", 0, p1))
+		Expect(restit.StatusCodeIs(http.StatusOK)).
+		Expect(restit.LengthIs("posts", 1)).
+		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
+			"item #0 retrieved is equal to p1", isCreatedFrom(p1))))
 	if _, err := testRetrieve1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -213,9 +103,10 @@ func TestServer(t *testing.T) {
 	}
 
 	testCreate2 := service.Create(p2, "/posts").
-		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs("posts", 1)).
-		Expect(nthItemIsCreatedFrom("posts", 0, p2))
+		Expect(restit.StatusCodeIs(http.StatusOK)).
+		Expect(restit.LengthIs("posts", 1)).
+		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
+			"item #0 retrieved is equal to p2", isCreatedFrom(p2))))
 	if _, err := testCreate2.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -224,9 +115,10 @@ func TestServer(t *testing.T) {
 	}
 
 	testUpdate1 := service.Update(p1b, "/post/"+p1.ID).
-		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs("posts", 1)).
-		Expect(nthItemIsUpdatedFrom("posts", 0, p1b))
+		Expect(restit.StatusCodeIs(http.StatusOK)).
+		Expect(restit.LengthIs("posts", 1)).
+		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
+			"item #0 retrieved is equal to p1b", isUpdatedFrom(p1b))))
 	if _, err := testUpdate1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -235,8 +127,8 @@ func TestServer(t *testing.T) {
 	}
 
 	testList2 := service.List("/posts").
-		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs("posts", 2))
+		Expect(restit.StatusCodeIs(http.StatusOK)).
+		Expect(restit.LengthIs("posts", 2))
 	if _, err := testList2.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -245,9 +137,10 @@ func TestServer(t *testing.T) {
 	}
 
 	testDelete1 := service.Delete("/post/" + p1b.ID).
-		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs("posts", 1)).
-		Expect(nthItemIsEqualTo("posts", 0, p1b))
+		Expect(restit.StatusCodeIs(http.StatusOK)).
+		Expect(restit.LengthIs("posts", 1)).
+		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
+			"item #0 returned is equal to p1b", isUpdatedFrom(p1b))))
 	if _, err := testDelete1.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -256,8 +149,8 @@ func TestServer(t *testing.T) {
 	}
 
 	testList3 := service.List("/posts").
-		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs("posts", 1))
+		Expect(restit.StatusCodeIs(http.StatusOK)).
+		Expect(restit.LengthIs("posts", 1))
 	if _, err := testList3.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -266,9 +159,10 @@ func TestServer(t *testing.T) {
 	}
 
 	testDelete2 := service.Delete("/post/" + p2.ID).
-		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs("posts", 1)).
-		Expect(nthItemIsEqualTo("posts", 0, p2))
+		Expect(restit.StatusCodeIs(http.StatusOK)).
+		Expect(restit.LengthIs("posts", 1)).
+		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
+			"item #0 returned is equal to p2", equals(p2))))
 	if _, err := testDelete2.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
@@ -277,8 +171,8 @@ func TestServer(t *testing.T) {
 	}
 
 	testList4 := service.List("/posts").
-		Expect(statusCodeIs(http.StatusOK)).
-		Expect(lengthIs("posts", 0))
+		Expect(restit.StatusCodeIs(http.StatusOK)).
+		Expect(restit.LengthIs("posts", 0))
 	if _, err := testList4.Do(); err != nil {
 		if ctxErr, ok := err.(restit.ContextError); ok {
 			t.Log(ctxErr.Log())
