@@ -26,7 +26,7 @@ func getTestHandler() (fn restit.CaseHandlerFunc, done <-chan int) {
 			StatusCode: http.StatusOK,
 			Body:       req.Body,
 		}
-		resp = &restit.HTTPResponse{hResp}
+		resp = &restit.HTTPResponse{RawResponse: hResp}
 		go func() {
 			chDone <- 1
 		}()

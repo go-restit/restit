@@ -20,7 +20,7 @@ func TestResponse_httptest(t *testing.T) {
 	w.WriteHeader(http.StatusOK)
 	w.Flush()
 
-	var resp restit.Response = &restit.HTTPTestResponse{w}
+	var resp restit.Response = &restit.HTTPTestResponse{RawResponse: w}
 	if want, have := http.StatusOK, resp.StatusCode(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
@@ -49,7 +49,7 @@ func TestResponse_httptest_JSON(t *testing.T) {
 	w.WriteHeader(http.StatusOK)
 	w.Flush()
 
-	var resp restit.Response = &restit.HTTPTestResponse{w}
+	var resp restit.Response = &restit.HTTPTestResponse{RawResponse: w}
 	if want, have := http.StatusOK, resp.StatusCode(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
@@ -103,7 +103,7 @@ func TestResponse_http(t *testing.T) {
 		t.Errorf("unexpected error: %#v", err.Error())
 	}
 
-	var resp restit.Response = &restit.HTTPResponse{rawResp}
+	var resp restit.Response = &restit.HTTPResponse{RawResponse: rawResp}
 	if want, have := http.StatusAccepted, resp.StatusCode(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
@@ -160,7 +160,7 @@ func TestResponse_http_JSON(t *testing.T) {
 		t.Errorf("unexpected error: %#v", err.Error())
 	}
 
-	var resp restit.Response = &restit.HTTPResponse{rawResp}
+	var resp restit.Response = &restit.HTTPResponse{RawResponse: rawResp}
 	if want, have := http.StatusAccepted, resp.StatusCode(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
@@ -187,7 +187,7 @@ func TestResponse_cached(t *testing.T) {
 	w.WriteHeader(http.StatusOK)
 	w.Flush()
 
-	resp := restit.CacheResponse(&restit.HTTPTestResponse{w})
+	resp := restit.CacheResponse(&restit.HTTPTestResponse{RawResponse: w})
 
 	// read once
 	if result, err := ioutil.ReadAll(resp.Body()); err != nil {
@@ -215,7 +215,7 @@ func TestResponse_cached_JSON(t *testing.T) {
 	w.WriteHeader(http.StatusOK)
 	w.Flush()
 
-	resp := restit.CacheResponse(&restit.HTTPTestResponse{w})
+	resp := restit.CacheResponse(&restit.HTTPTestResponse{RawResponse: w})
 
 	if want, have := http.StatusOK, resp.StatusCode(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
