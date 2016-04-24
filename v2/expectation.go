@@ -21,16 +21,55 @@ func StatusCodeIs(n int) Expectation {
 		})
 }
 
+// LengthIs test the length of a given field
+func LengthIs(name string, n int) Expectation {
+	return Describe(
+		fmt.Sprintf("length of %#v is %d", name, n),
+		func(ctx context.Context, resp Response) (err error) {
+			proto, err := resp.JSON()
+			if err != nil {
+				return
+			} else if want, have := lzjson.TypeObject, proto.Type(); want != have {
+				ctxErr := NewContextError("expected root to be type %s, got %s", want, have)
+				ctxErr.Prepend("ref", "response")
+				err = ctxErr
+				return
+			}
+
+			list := proto.Get(name)
+			if err != nil {
+				return
+			} else if want, have := lzjson.TypeArray, list.Type(); want != have {
+				ctxErr := NewContextError("expected %#v to be type %s, got %s",
+					name, want, have)
+				ctxErr.Prepend("ref", "response."+name)
+				ctxErr.Append("response", string(proto.Raw()))
+				err = ctxErr
+				return
+			}
+
+			if want, have := n, list.Len(); want != have {
+				ctxErr := NewContextError("expected %#v to be length %#v, got %#v",
+					name, want, have)
+				ctxErr.Prepend("ref", "response."+name+".length")
+				err = ctxErr
+				return
+			}
+
+			return
+		})
+}
+
 // NthTest tests a given
 type NthTest struct {
-	n     uint
+	n     int
 	name  string
 	tests []JSONTest
 }
 
 // Nth will get the nth of a specific field in a JSON
 // and test it against some JSONTest
-func Nth(n uint) *NthTest {
+func Nth(n int) *NthTest {
 	return &NthTest{n: n, tests: make([]JSONTest, 0)}
 }
 

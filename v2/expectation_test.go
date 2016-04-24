@@ -35,6 +35,24 @@ func TestStatusCodeIs(t *testing.T) {
 	}
 }
 
+func TestLengthIs(t *testing.T) {
+
+	resp := restit.CacheResponse(restit.HTTPResponse{
+		RawResponse: &http.Response{
+			Body: ioutil.NopCloser(strings.NewReader(`{"hello": ["hello 1", "hello 2"]}`)),
+		},
+	})
+
+	if err := restit.LengthIs("hello", 2).Do(nil, resp); err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if err := restit.LengthIs("hello", 1).Do(nil, resp); err == nil {
+		t.Errorf("should trigger error but didn't")
+	} else if want, have := `expected "hello" to be length 1, got 2`, err.Error(); want != have {
+		t.Errorf("\nexpected: %s\ngot:      %s", want, have)
+	}
+}
+
 func TestNthTest(t *testing.T) {
 
 	resp := restit.CacheResponse(restit.HTTPResponse{
