@@ -3,13 +3,37 @@ package restit_test
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/go-restit/lzjson"
 	"github.com/go-restit/restit/v2"
 )
+
+func init() {
+	rand.Seed(int64(time.Now().Nanosecond()))
+}
+
+func TestStatusCodeIs(t *testing.T) {
+	statusCode := rand.Int()
+	resp := restit.HTTPResponse{
+		RawResponse: &http.Response{
+			StatusCode: statusCode,
+		},
+	}
+
+	if err := restit.StatusCodeIs(statusCode).Do(nil, resp); err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if err := restit.StatusCodeIs(statusCode-1).Do(nil, resp); err == nil {
+		t.Errorf("expected to trigger error but didn't")
+	} else if want, have := fmt.Sprintf("expected %d, got %d", statusCode-1, statusCode), err.Error(); want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+}
 
 func TestNthTest(t *testing.T) {
 

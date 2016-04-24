@@ -7,6 +7,20 @@ import (
 	"golang.org/x/net/context"
 )
 
+// StatusCodeIs test the response status code
+func StatusCodeIs(n int) Expectation {
+	return Describe(
+		fmt.Sprintf("status code is %d", n),
+		func(ctx context.Context, resp Response) (err error) {
+			if want, have := n, resp.StatusCode(); want != have {
+				ctxErr := NewContextError("expected %d, got %d", want, have)
+				ctxErr.Prepend("ref", "header status code")
+				err = ctxErr
+			}
+			return
+		})
+}
+
 // NthTest tests a given
 type NthTest struct {
 	n     uint
