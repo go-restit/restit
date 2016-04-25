@@ -72,9 +72,7 @@ func TestServer(t *testing.T) {
 		Expect(restit.StatusCodeIs(http.StatusOK)).
 		Expect(restit.LengthIs("posts", 0))
 	if _, err := testList1.Do(); err != nil {
-		if ctxErr, ok := err.(restit.ContextError); ok {
-			t.Log(ctxErr.Log())
-		}
+		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
 
@@ -84,9 +82,7 @@ func TestServer(t *testing.T) {
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 returned is created from payload", isCreatedFrom(p1))))
 	if _, err := testCreate1.Do(); err != nil {
-		if ctxErr, ok := err.(restit.ContextError); ok {
-			t.Log(ctxErr.Log())
-		}
+		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
 
@@ -96,9 +92,7 @@ func TestServer(t *testing.T) {
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 retrieved is equal to p1", isCreatedFrom(p1))))
 	if _, err := testRetrieve1.Do(); err != nil {
-		if ctxErr, ok := err.(restit.ContextError); ok {
-			t.Log(ctxErr.Log())
-		}
+		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
 
@@ -108,9 +102,7 @@ func TestServer(t *testing.T) {
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 retrieved is equal to p2", isCreatedFrom(p2))))
 	if _, err := testCreate2.Do(); err != nil {
-		if ctxErr, ok := err.(restit.ContextError); ok {
-			t.Log(ctxErr.Log())
-		}
+		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
 
@@ -120,9 +112,7 @@ func TestServer(t *testing.T) {
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 retrieved is equal to p1b", isUpdatedFrom(p1b))))
 	if _, err := testUpdate1.Do(); err != nil {
-		if ctxErr, ok := err.(restit.ContextError); ok {
-			t.Log(ctxErr.Log())
-		}
+		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
 
@@ -130,9 +120,7 @@ func TestServer(t *testing.T) {
 		Expect(restit.StatusCodeIs(http.StatusOK)).
 		Expect(restit.LengthIs("posts", 2))
 	if _, err := testList2.Do(); err != nil {
-		if ctxErr, ok := err.(restit.ContextError); ok {
-			t.Log(ctxErr.Log())
-		}
+		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
 
@@ -142,9 +130,7 @@ func TestServer(t *testing.T) {
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 returned is equal to p1b", isUpdatedFrom(p1b))))
 	if _, err := testDelete1.Do(); err != nil {
-		if ctxErr, ok := err.(restit.ContextError); ok {
-			t.Log(ctxErr.Log())
-		}
+		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
 
@@ -152,9 +138,7 @@ func TestServer(t *testing.T) {
 		Expect(restit.StatusCodeIs(http.StatusOK)).
 		Expect(restit.LengthIs("posts", 1))
 	if _, err := testList3.Do(); err != nil {
-		if ctxErr, ok := err.(restit.ContextError); ok {
-			t.Log(ctxErr.Log())
-		}
+		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
 
@@ -164,9 +148,7 @@ func TestServer(t *testing.T) {
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 returned is equal to p2", equals(p2))))
 	if _, err := testDelete2.Do(); err != nil {
-		if ctxErr, ok := err.(restit.ContextError); ok {
-			t.Log(ctxErr.Log())
-		}
+		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
 
@@ -174,9 +156,7 @@ func TestServer(t *testing.T) {
 		Expect(restit.StatusCodeIs(http.StatusOK)).
 		Expect(restit.LengthIs("posts", 0))
 	if _, err := testList4.Do(); err != nil {
-		if ctxErr, ok := err.(restit.ContextError); ok {
-			t.Log(ctxErr.Log())
-		}
+		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
 
