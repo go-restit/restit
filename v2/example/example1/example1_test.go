@@ -70,7 +70,8 @@ func TestServer(t *testing.T) {
 		Expect(restit.LengthIs("posts", 1)).
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 returned is created from payload", isCreatedFrom(p1))))
-	if _, err := testCreate1.Do(); err != nil {
+	if resp, err := testCreate1.Do(); err != nil {
+		t.Logf("raw response:\n%s\n", resp.Raw())
 		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
@@ -80,7 +81,8 @@ func TestServer(t *testing.T) {
 		Expect(restit.LengthIs("posts", 1)).
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 retrieved is equal to p1", isCreatedFrom(p1))))
-	if _, err := testRetrieve1.Do(); err != nil {
+	if resp, err := testRetrieve1.Do(); err != nil {
+		t.Logf("raw response:\n%s\n", resp.Raw())
 		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
@@ -96,7 +98,8 @@ func TestServer(t *testing.T) {
 		Expect(restit.LengthIs("posts", 1)).
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 retrieved is equal to p2", isCreatedFrom(p2))))
-	if _, err := testCreate2.Do(); err != nil {
+	if resp, err := testCreate2.Do(); err != nil {
+		t.Logf("raw response:\n%s\n", resp.Raw())
 		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
@@ -106,7 +109,8 @@ func TestServer(t *testing.T) {
 		Expect(restit.LengthIs("posts", 1)).
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 retrieved is equal to p2", isCreatedFrom(p2))))
-	if _, err := testRetrieve2.Do(); err != nil {
+	if resp, err := testRetrieve2.Do(); err != nil {
+		t.Logf("raw response:\n%s\n", resp.Raw())
 		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
@@ -122,7 +126,8 @@ func TestServer(t *testing.T) {
 		Expect(restit.LengthIs("posts", 1)).
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 retrieved is updated from p1b", isUpdatedFrom(p1b))))
-	if _, err := testUpdate1.Do(); err != nil {
+	if resp, err := testUpdate1.Do(); err != nil {
+		t.Logf("raw response:\n%s\n", resp.Raw())
 		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
@@ -135,7 +140,8 @@ func TestServer(t *testing.T) {
 			"item #0 retrieved is updated from p1b", isUpdatedFrom(p1b)))).
 		Expect(restit.Nth(1).Of("posts").Is(restit.DescribeJSON(
 			"item #1 retrieved is created from p2", isCreatedFrom(p2))))
-	if _, err := testList2.Do(); err != nil {
+	if resp, err := testList2.Do(); err != nil {
+		t.Logf("raw response:\n%s\n", resp.Raw())
 		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
@@ -146,7 +152,8 @@ func TestServer(t *testing.T) {
 		Expect(restit.LengthIs("posts", 1)).
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 returned is equal to p1b", isUpdatedFrom(p1b))))
-	if _, err := testDelete1.Do(); err != nil {
+	if resp, err := testDelete1.Do(); err != nil {
+		t.Logf("raw response:\n%s\n", resp.Raw())
 		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
@@ -155,7 +162,8 @@ func TestServer(t *testing.T) {
 	testList3 := service.List("/posts").
 		Expect(restit.StatusCodeIs(http.StatusOK)).
 		Expect(restit.LengthIs("posts", 1))
-	if _, err := testList3.Do(); err != nil {
+	if resp, err := testList3.Do(); err != nil {
+		t.Logf("raw response:\n%s\n", resp.Raw())
 		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
@@ -166,7 +174,8 @@ func TestServer(t *testing.T) {
 		Expect(restit.LengthIs("posts", 1)).
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
 			"item #0 returned is equal to p2", equals(p2))))
-	if _, err := testDelete2.Do(); err != nil {
+	if resp, err := testDelete2.Do(); err != nil {
+		t.Logf("raw response:\n%s\n", resp.Raw())
 		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
@@ -175,7 +184,8 @@ func TestServer(t *testing.T) {
 	testList4 := service.List("/posts").
 		Expect(restit.StatusCodeIs(http.StatusOK)).
 		Expect(restit.LengthIs("posts", 0))
-	if _, err := testList4.Do(); err != nil {
+	if resp, err := testList4.Do(); err != nil {
+		t.Logf("raw response:\n%s\n", resp.Raw())
 		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
 	}
