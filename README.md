@@ -28,8 +28,8 @@ For more information, please read the README.md of these version:
 - [Stable version][v1] (version 1)
 - [Development version][v2] (version 2)
 
-[v1]: v1/README.md
-[v2]: v2/README.md
+[v1]: v1/
+[v2]: v2/
 
 
 Bug Reports
