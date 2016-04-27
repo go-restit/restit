@@ -173,12 +173,80 @@ if err != nil {
 
 ### Expectation
 
-// To be written
+[Expectation][Expectation] is an interface for you to implement.
+
+You can write your own expectation easily with [Describe][Describe].
+
+
+```go
+
+import (
+  restit "github.com/go-restit/restit/v2"
+  "golang.org/x/net/context"
+)
+
+...
+
+exp1 := restit.Describe("test something", func(ctx context.Context, resp restit.Response) error {
+
+  // examine body
+  body := resp.Body()
+
+  // parse the body as lzjson.Node
+  json := resp.JSON()
+
+  return nil
+})
+
+caseCreate := service.Create(Post{Name: "hello world", Body: "some hello world message"}).
+  Expect(exp1)
+
+```
+
+Or you can use the test helpers (like [StatusCodeIs][StatusCodeIs],
+[LengthIs][LengthIs] and [DescribeJSON][DescribeJSON]):
+
+```go
+
+caseCreate := service.Create(Post{Name: "hello world", Body: "some hello world message"}).
+  Expect(restit.StatusCodeIs(http.StatusOK)).
+  Expect(restit.LengthIs("posts", 1)).
+  Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
+    "item #0 retrieved has the values", func (json lzjson.Node) (err error) {
+
+      post := &Post{}
+      if err = json.Unmarshal(post); err != nil {
+        return
+      }
+
+      if want, have := "myid", post.ID; want != have {
+        err = fmt.Errorf("ID expected %#v, got %#v", want, have)
+      }
+      return
+    })))
+
+```
+
+[Expectation]: https://godoc.org/github.com/go-restit/restit/v2#Expectation
+[Describe]: https://godoc.org/github.com/go-restit/restit/v2#Describe
+[StatusCodeIs]: https://godoc.org/github.com/go-restit/restit/v2#StatusCodeIs
+[LengthIs]: https://godoc.org/github.com/go-restit/restit/v2#LengthIs
+[DescribeJSON]: https://godoc.org/github.com/go-restit/restit/v2#DescribeJSON
 
 
 ### JSON Decoding with Ease
 
-// To be written
+RESTit uses the helper libaray [lzjson][lzjson] to help parse JSON response.
+
+Features:
+
+1. You don't need to define a protocol struct before decoding JSON.
+2. You can examine values existance, types before decoding.
+3. You can also decode only part of JSON.
+
+More information, please see [lzjson respository][lzjson]
+
+[lzjson]: https://github.com/go-restit/lzjson
 
 
 ## Bug Reports
