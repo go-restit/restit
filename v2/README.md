@@ -148,41 +148,24 @@ caseCreate.Do()
 The request and response are fully examinable:
 
 ```go
-package post_test
 
-import (
-  "post"
+caseCreate := service.Create(Post{Name: "hello world", Body: "some hello world message"}).
+  Expect(expectation1).
+  Expect(expectation2).
+  Expect(expectation3)
 
-  "testing"
-  "net/http/httptest"
+resp, err := caseCreate.Do()
+if err != nil {
 
-  restit "github.com/go-restit/restit/v2"
-)
-
-func TestPostAPI(t *testing.T)
-
-  // define the path for your handler
-  service := restit.NewHTTPTestService("/dummy/api/posts", post.Handler)
-
-  caseCreate := service.Create(Post{Name: "hello world", Body: "some hello world message"}).
-    Expect(expectation1).
-    Expect(expectation2).
-    Expect(expectation3)
-
-  resp, err := caseCreate.Do()
-  if err != nil {
-    t.Errorf("error running create %s", err)
-    return
-  }
-
-  bodyBytes, err := ioutil.ReadAll(resp.Body())
-  if err != nil {
-    t.Errorf("error reading response body: %s", err)
-    return
-  }
-
+  // raw request
   t.Logf("request: %#v", caseCreate.Request) // raw *htt.Request used
+
+  // read the raw response body
+  bodyBytes, _ := ioutil.ReadAll(resp.Body())
   t.Logf("body: %s", bodyBytes)
+
+  t.Errorf("error running create %s", err)
+  return
 }
 
 ```
