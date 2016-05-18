@@ -21,6 +21,9 @@ type Response interface {
 	// Body returns the body Reader / ReadCloser
 	Body() io.Reader
 
+	// String returns the body as string
+	String() string
+
 	// Raw returns the raw response data structure
 	Raw() interface{}
 
@@ -47,6 +50,19 @@ func (r HTTPTestResponse) Header() http.Header {
 // Body implements Response
 func (r HTTPTestResponse) Body() io.Reader {
 	return r.RawResponse.Body
+}
+
+// String implements Response
+//
+// Note: the body will not "survive" the read.
+// you should use CacheResponse to wrap this before
+// doing String().
+func (r HTTPTestResponse) String() string {
+	bytes, err := ioutil.ReadAll(r.Body())
+	if err != nil {
+		panic(err)
+	}
+	return string(bytes)
 }
 
 // Raw implements Response
@@ -79,6 +95,19 @@ func (r HTTPResponse) Header() http.Header {
 // Body implements Response
 func (r HTTPResponse) Body() io.Reader {
 	return r.RawResponse.Body
+}
+
+// String implements Response
+//
+// Note: the body will not "survive" the read.
+// you should use CacheResponse to wrap this before
+// doing String().
+func (r HTTPResponse) String() string {
+	bytes, err := ioutil.ReadAll(r.Body())
+	if err != nil {
+		panic(err)
+	}
+	return string(bytes)
 }
 
 // Raw implements Response
@@ -128,6 +157,19 @@ func (cr *cachedResponse) Body() io.Reader {
 		}
 	}
 	return cr.cachedReader.Copy()
+}
+
+// String implements Response
+//
+// Note: the body will not "survive" the read.
+// you should use CacheResponse to wrap this before
+// doing String().
+func (cr *cachedResponse) String() string {
+	bytes, err := ioutil.ReadAll(cr.Body())
+	if err != nil {
+		panic(err)
+	}
+	return string(bytes)
 }
 
 // Raw implements Response
