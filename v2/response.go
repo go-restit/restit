@@ -122,7 +122,10 @@ func (cr *cachedResponse) Body() io.Reader {
 		if err == nil {
 			err = io.EOF
 		}
-		cr.cachedReader = &cachedReader{body, err}
+		cr.cachedReader = &cachedReader{
+			body: body,
+			err:  err,
+		}
 	}
 	return cr.cachedReader.Copy()
 }
@@ -141,19 +144,20 @@ func (cr *cachedResponse) JSON() (lzjson.Node, error) {
 type cachedReader struct {
 	body []byte
 	err  error
+	pos  int
 }
 
 func (cr *cachedReader) Read(b []byte) (n int, err error) {
-	copy(b, cr.body)
-	n = len(cr.body)
+	n = copy(b, cr.body[cr.pos:])
+	cr.pos += n
 	err = cr.err
 	return
 }
 
 func (cr *cachedReader) Copy() io.Reader {
 	reader := &cachedReader{
-		make([]byte, len(cr.body), (cap(cr.body)+1)*2),
-		cr.err,
+		body: make([]byte, len(cr.body), (cap(cr.body)+1)*2),
+		err:  cr.err,
 	}
 	copy(reader.body, cr.body)
 	return reader
