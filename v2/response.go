@@ -192,7 +192,9 @@ type cachedReader struct {
 func (cr *cachedReader) Read(b []byte) (n int, err error) {
 	n = copy(b, cr.body[cr.pos:])
 	cr.pos += n
-	err = cr.err
+	if cr.pos >= len(cr.body) {
+		err = cr.err
+	}
 	return
 }
 
