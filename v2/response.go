@@ -73,7 +73,8 @@ func (r HTTPTestResponse) Raw() interface{} {
 // JSON implements Response
 func (r HTTPTestResponse) JSON() (lzjson.Node, error) {
 	reader := r.Body()
-	return lzjson.Decode(reader)
+	node := lzjson.Decode(reader)
+	return node, node.ParseError()
 }
 
 // HTTPResponse wraps a *http.Response
@@ -118,7 +119,8 @@ func (r HTTPResponse) Raw() interface{} {
 // JSON implements Response
 func (r HTTPResponse) JSON() (lzjson.Node, error) {
 	reader := r.Body()
-	return lzjson.Decode(reader)
+	node := lzjson.Decode(reader)
+	return node, node.ParseError()
 }
 
 // CacheResponse returns a new Response
@@ -180,7 +182,8 @@ func (cr cachedResponse) Raw() interface{} {
 // JSON implements Response
 func (cr *cachedResponse) JSON() (lzjson.Node, error) {
 	reader := cr.Body()
-	return lzjson.Decode(reader)
+	node := lzjson.Decode(reader)
+	return node, node.ParseError()
 }
 
 type cachedReader struct {
