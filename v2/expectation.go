@@ -93,8 +93,8 @@ func (t *NthTest) Desc() string {
 
 // Do implements Expectation
 func (t *NthTest) Do(ctx context.Context, resp Response) (err error) {
-	root, err := lzjson.Decode(resp.Body())
-	if err != nil {
+	root := lzjson.Decode(resp.Body())
+	if root.ParseError() != nil {
 		err = fmt.Errorf("error decoding body to JSON (%s)", err)
 		return
 	}
