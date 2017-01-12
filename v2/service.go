@@ -98,6 +98,12 @@ func (s Service) Update(payload interface{}, paths ...string) *Case {
 	return s.NewCase("PUT", payload, paths...)
 }
 
+// Patch sends a PATCH request (wtih JSON encoded payload)
+// to singular path and examine the result
+func (s Service) Patch(payload interface{}, paths ...string) *Case {
+	return s.NewCase("PATCH", payload, paths...)
+}
+
 // Retrieve sends a GET request
 // to singular path and examine the result
 func (s Service) Retrieve(paths ...string) *Case {
