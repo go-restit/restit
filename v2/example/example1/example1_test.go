@@ -192,7 +192,7 @@ func TestServer(t *testing.T) {
 		Expect(restit.StatusCodeIs(http.StatusOK)).
 		Expect(restit.LengthIs("posts", 1)).
 		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
-			"item #0 returned is equal to p1b", isUpdatedFrom(p1b))))
+			"item #0 retrieved is patched with p1c", isPatchedWith(p1c))))
 	if resp, err := testDelete1.Do(); err != nil {
 		t.Logf("raw response:\n%s\n", resp.Raw())
 		t.Log(err.(restit.ContextError).Log())
