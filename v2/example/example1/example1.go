@@ -1,6 +1,7 @@
 package example1
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-restit/restit/v2/example/server"
@@ -28,6 +29,41 @@ func (p *Post) SetID(id string) {
 // GetType implement server.Storable
 func (p Post) GetType() string {
 	return "post"
+}
+
+// PatchWith implements server.Patchable.
+func (p *Post) PatchWith(v interface{}) error {
+	var patch Post
+
+	switch v.(type) {
+	case Post:
+		patch = v.(Post)
+	case *Post:
+		ptr := v.(*Post)
+		patch = *ptr
+	default:
+		return fmt.Errorf("invalid type")
+	}
+
+	if patch.ID != "" {
+		p.ID = patch.ID
+	}
+	if patch.Title != "" {
+		p.Title = patch.Title
+	}
+	if patch.Body != "" {
+		p.Body = patch.Body
+	}
+	if !patch.Created.IsZero() {
+		p.Created = patch.Created
+	}
+	if !patch.Created.IsZero() {
+		p.Updated = patch.Updated
+	} else {
+		p.Updated = time.Now()
+	}
+
+	return nil
 }
 
 // PostServer creates an http.Handler that handles Post
