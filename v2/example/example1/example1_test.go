@@ -45,6 +45,31 @@ func TestServer(t *testing.T) {
 		}
 	}
 
+	// helper function to write expectations
+	isPatchedWith := func(patch example1.Post) func(lzjson.Node) error {
+		return func(j lzjson.Node) (err error) {
+			stored := example1.Post{}
+			j.Unmarshal(&stored)
+			if want, have := patch.ID, stored.ID; want != "" && want != have {
+				err = fmt.Errorf("ID expected %s, got %s", want, have)
+				return
+			} else if want, have := patch.Title, stored.Title; want != "" && want != have {
+				err = fmt.Errorf("Title expected %s, got %s", want, have)
+				return
+			} else if want, have := patch.Body, stored.Body; want != "" && want != have {
+				err = fmt.Errorf("Body expected %s, got %s", want, have)
+				return
+			} else if want, have := patch.Created, stored.Created; !want.IsZero() && !want.Equal(have) {
+				err = fmt.Errorf("Created expected %s, got %s", want, have)
+				return
+			} else if want, have := patch.Updated, stored.Updated; !want.IsZero() && !want.Equal(have) {
+				err = fmt.Errorf("Updated expected %s, got %s", want, have)
+				return
+			}
+			return
+		}
+	}
+
 	// we're reusing `equals` here but you may have different test function
 	// for different case
 	isCreatedFrom := equals
@@ -141,6 +166,22 @@ func TestServer(t *testing.T) {
 		Expect(restit.Nth(1).Of("posts").Is(restit.DescribeJSON(
 			"item #1 retrieved is created from p2", isCreatedFrom(p2))))
 	if resp, err := testList2.Do(); err != nil {
+		t.Logf("raw response:\n%s\n", resp.Raw())
+		t.Log(err.(restit.ContextError).Log())
+		t.Errorf(err.Error())
+	}
+
+	// test patching p1 with p1c
+	p1c := example1.Post{
+		Title: "Some post content 1c",
+		Body:  "Some post body 1c",
+	}
+	testPatch1 := service.Patch(p1c, "/post/"+p1.ID).
+		Expect(restit.StatusCodeIs(http.StatusOK)).
+		Expect(restit.LengthIs("posts", 1)).
+		Expect(restit.Nth(0).Of("posts").Is(restit.DescribeJSON(
+			"item #0 retrieved is patched with p1c", isPatchedWith(p1c))))
+	if resp, err := testPatch1.Do(); err != nil {
 		t.Logf("raw response:\n%s\n", resp.Raw())
 		t.Log(err.(restit.ContextError).Log())
 		t.Errorf(err.Error())
