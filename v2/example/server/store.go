@@ -7,6 +7,11 @@ type Storable interface {
 	SetID(string)
 }
 
+// Patchable is an interface of a structure that can be patched with another partial instance of it.
+type Patchable interface {
+	PatchWith(interface{}) error
+}
+
 // NewStore returns a blank Store
 func NewStore() *Store {
 	return &Store{
