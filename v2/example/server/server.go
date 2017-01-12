@@ -132,6 +132,58 @@ func New(store *Store, f Factory) Server {
 			})
 		}
 
+		Patch := func(w http.ResponseWriter, r *http.Request) {
+			type storablePatchable interface {
+				Storable
+				Patchable
+			}
+
+			if r == nil {
+				http.Error(w, "request is nil", http.StatusBadRequest)
+			}
+
+			// Decode the request body.
+			dec := json.NewDecoder(r.Body)
+			item := f.Make().(Storable)
+			if err := dec.Decode(item); err != nil {
+				http.Error(w,
+					fmt.Sprintf("failed to JSON decode request body as %T", item),
+					http.StatusBadRequest)
+			}
+
+			// Encoder for response.
+			enc := json.NewEncoder(w)
+
+			// Search the old stored item.
+			// If not found, return 404.
+			id := mux.Vars(r)["id"]
+			stored := store.Get(item.GetType(), id).(storablePatchable)
+			if stored == nil {
+				w.WriteHeader(http.StatusNotFound)
+				enc.Encode(map[string]interface{}{
+					"status":  http.StatusNotFound,
+					"message": "not found",
+				})
+				return
+			}
+
+			// Do the actual patching.
+			stored.PatchWith(item)
+
+			// Enforce ID, then put it back into the store.
+			stored.SetID(id)
+			store.Put(stored)
+
+			w.WriteHeader(http.StatusOK)
+			enc.Encode(map[string]interface{}{
+				"status": http.StatusOK,
+				nounp: []interface{}{
+					stored,
+				},
+				noun: stored,
+			})
+		}
+
 		Delete := func(w http.ResponseWriter, r *http.Request) {
 
 			item := f.Make().(Storable)
@@ -179,6 +231,7 @@ func New(store *Store, f Factory) Server {
 		r := mux.NewRouter()
 		r.HandleFunc(pathSingular, Retrieve).Methods("GET")
 		r.HandleFunc(pathSingular, Update).Methods("PUT")
+		r.HandleFunc(pathSingular, Patch).Methods("PATCH")
 		r.HandleFunc(pathSingular, Delete).Methods("DELETE")
 		r.HandleFunc(pathPlural, List).Methods("GET")
 		r.HandleFunc(pathPlural, Create).Methods("POST")
