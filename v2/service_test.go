@@ -115,11 +115,11 @@ func dummyTestSuite(service *restit.Service, baseURL string) (err error) {
 		postID := RandString(20)
 		testCase := service.Patch(post{ID: postID, Name: RandString(20)}, postID)
 		if req := testCase.Request; req == nil {
-			err = fmt.Errorf("[update][request] empty")
+			err = fmt.Errorf("[patch][request] empty")
 		} else if want, have := baseURL+"/"+postID, req.URL.String(); want != have {
-			err = fmt.Errorf("[update][request.URL] expected %#v, got %#v", want, have)
+			err = fmt.Errorf("[patch][request.URL] expected %#v, got %#v", want, have)
 		} else if want, have := "PATCH", req.Method; want != have {
-			err = fmt.Errorf("[update][request.Method] expected %#v, got %#v", want, have)
+			err = fmt.Errorf("[patch][request.Method] expected %#v, got %#v", want, have)
 		}
 		return
 	}()
