@@ -57,7 +57,7 @@ func (p *Post) PatchWith(v interface{}) error {
 	if !patch.Created.IsZero() {
 		p.Created = patch.Created
 	}
-	if !patch.Created.IsZero() {
+	if !patch.Updated.IsZero() {
 		p.Updated = patch.Updated
 	} else {
 		p.Updated = time.Now()
