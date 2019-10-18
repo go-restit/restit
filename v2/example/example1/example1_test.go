@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/go-restit/lzjson"
 	restit "github.com/go-restit/restit/v2"
@@ -173,8 +174,9 @@ func TestServer(t *testing.T) {
 
 	// test patching p1 with p1c
 	p1c := example1.Post{
-		Title: "Some post content 1c",
-		Body:  "Some post body 1c",
+		Title:   "Some post content 1c",
+		Body:    "Some post body 1c",
+		Updated: time.Now(),
 	}
 	testPatch1 := service.Patch(p1c, "/post/"+p1.ID).
 		Expect(restit.StatusCodeIs(http.StatusOK)).
