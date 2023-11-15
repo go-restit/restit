@@ -1,0 +1,11 @@
+github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
+github.com/gorilla/mux v1.8.1 h1:TuBL49tXwgrFYWhqrNgrUNEY92u81SPhu7sTdzQEiWY=
+github.com/gorilla/mux v1.8.1/go.mod h1:AKf9I4AEqPTmMytcMc0KkNouC66V3BtZ4qD5fmWSiMQ=
+github.com/jmcvetta/napping v3.2.0+incompatible h1:shS22lJu18MtyRV7IqWenMmrRXCjADcUcxONAnp5zxY=
+github.com/jmcvetta/napping v3.2.0+incompatible/go.mod h1:dlR6SvwNgFr2ASHFGDIO2fhkZM2rU/9B6NB6xUciyv4=
+github.com/jmcvetta/randutil v0.0.0-20150817122601-2bb1b664bcff h1:6NvhExg4omUC9NfA+l4Oq3ibNNeJUdiAF3iBVB0PlDk=
+github.com/jmcvetta/randutil v0.0.0-20150817122601-2bb1b664bcff/go.mod h1:ddfPX8Z28YMjiqoaJhNBzWHapTHXejnB5cDCUWDwriw=
+github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
+github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
+github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
+gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
