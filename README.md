@@ -9,7 +9,7 @@ The aim is to make these integration readable highly re-usable,
 and yet easy to modify.
 
 [ci-url]: https://github.com/go-restit/restit/actions?query=branch%3Amain
-[ci-badge]: https://github.com/go-restit/restit/actions/workflows/ci.yml/badge.svg
+[ci-badge]: https://github.com/go-restit/restit/actions/workflows/ci.yml/badge.svg?branch=main
 
 
 Versions
