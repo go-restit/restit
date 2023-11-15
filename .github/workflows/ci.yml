@@ -21,6 +21,11 @@ jobs:
       - name: Display Go version
         run: go version
 
+      - name: Test v1
+        run: |
+          cd v1
+          go test
+
       - name: Test v2
         run: |
           cd v2
