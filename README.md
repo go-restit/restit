@@ -1,4 +1,4 @@
-# RESTit [![Travis test][travis-badge]][travis] [![Appveyor test][appveyor-badge]][appveyor]
+# RESTit [![CI test][ci-badge]][ci-url]
 
 A Go micro-framework to help writing RESTful API integration test
 
@@ -8,10 +8,8 @@ integration test program for their JSON-based RESTful APIs.
 The aim is to make these integration readable highly re-usable,
 and yet easy to modify.
 
-[travis]: https://travis-ci.org/go-restit/restit?branch=master
-[travis-badge]: https://api.travis-ci.org/go-restit/restit.svg?branch=master
-[appveyor]: https://ci.appveyor.com/project/yookoala/restit?branch=master
-[appveyor-badge]: https://ci.appveyor.com/api/projects/status/github/go-restit/restit?branch=master&svg=true
+[ci-url]: https://github.com/go-restit/restit/actions?query=branch%3Amain
+[ci-badge]: https://github.com/go-restit/restit/actions/workflows/ci.yml/badge.svg
 
 
 Versions
