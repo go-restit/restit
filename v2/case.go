@@ -42,6 +42,12 @@ func (c *Case) AddQuery(key, value string) *Case {
 	return c
 }
 
+// ModifyCase allows user do whatever to the case (even
+// rewrite a new one) without interrupting the chaining.
+func (c *Case) ModifyCase(fn func(c *Case) *Case) *Case {
+	return fn(c)
+}
+
 // Expect appends an expectation to the Case
 func (c *Case) Expect(exp Expectation) *Case {
 	c.Expectations = append(c.Expectations, exp)
