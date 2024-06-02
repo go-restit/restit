@@ -83,7 +83,7 @@ func TestCase_EmptyRequest(t *testing.T) {
 	resp, err := testCase.Do()
 	if err == nil {
 		t.Errorf("unable to trigger error")
-	} else if want, have := "Request is nil", err.Error(); want != have {
+	} else if want, have := "case.Request is nil", err.Error(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
 
@@ -106,7 +106,7 @@ func TestCase_EmptyHandler(t *testing.T) {
 	resp, err := testCase.Do()
 	if err == nil {
 		t.Errorf("unable to trigger error")
-	} else if want, have := "Handler is nil", err.Error(); want != have {
+	} else if want, have := "case.Handler is nil", err.Error(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
 	}
 
@@ -213,7 +213,7 @@ func TestCase_WithContext(t *testing.T) {
 	}
 
 	if want, have := true, expHasContext; want != have {
-		err = fmt.Errorf("expected %#v, got %#v", want, have)
+		t.Errorf("expected %#v, got %#v", want, have)
 	}
 
 	// test the response *JSON
@@ -337,7 +337,7 @@ func TestCase_Describe(t *testing.T) {
 	}
 
 	desc := restit.Describe(str, fn)
-	desc.Do(nil, nil)
+	desc.Do(context.Background(), nil)
 	if want, have := str, desc.Desc(); want != have {
 		t.Errorf("expected %#v, got %#v", want, have)
 	} else if want, have := true, fnRun; want != have {

@@ -37,9 +37,7 @@ func LengthIs(name string, n int) Expectation {
 			}
 
 			list := proto.Get(name)
-			if err != nil {
-				return
-			} else if want, have := lzjson.TypeArray, list.Type(); want != have {
+			if want, have := lzjson.TypeArray, list.Type(); want != have {
 				ctxErr := NewContextError("expected %#v to be type %s, got %s",
 					name, want, have)
 				ctxErr.Prepend("ref", "response."+name)

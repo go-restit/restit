@@ -119,10 +119,7 @@ func (ctx *contextError) Len() int {
 
 // Less implements sort.Interface
 func (ctx *contextError) Less(i, j int) bool {
-	if (*ctx)[i].weight < (*ctx)[j].weight {
-		return true
-	}
-	return false
+	return (*ctx)[i].weight < (*ctx)[j].weight
 }
 
 // Swap implements sort.Interface
