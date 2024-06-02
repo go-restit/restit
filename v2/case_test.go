@@ -345,6 +345,30 @@ func TestCase_Describe(t *testing.T) {
 	}
 }
 
+func TestCase_ModifyCase(t *testing.T) {
+	var urlResult string
+
+	testVal := RandString(20)
+	r, err := http.NewRequest("GET", "http://example.com/foo/bar", nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %s", err)
+	}
+
+	c := &restit.Case{
+		Request: r,
+	}
+	c.
+		AddQuery("hello", testVal).
+		ModifyCase(func(c *restit.Case) *restit.Case {
+			urlResult = c.Request.URL.String()
+			return c
+		})
+
+	if want, have := "http://example.com/foo/bar?hello="+testVal, urlResult; want != have {
+		t.Errorf("expected %#v, got %#v", want, have)
+	}
+}
+
 func TestCase_Expect(t *testing.T) {
 	c := &restit.Case{}
 	str := RandString(20)
