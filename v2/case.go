@@ -52,13 +52,13 @@ func (c *Case) Expect(exp Expectation) *Case {
 // and return the result
 func (c Case) Do() (resp Response, err error) {
 	if c.Request == nil {
-		return nil, fmt.Errorf("Request is nil")
+		return nil, fmt.Errorf("case.Request is nil")
 	}
 	if c.Context == nil {
 		c.Context = context.Background()
 	}
 	if c.Handler == nil {
-		return nil, fmt.Errorf("Handler is nil")
+		return nil, fmt.Errorf("case.Handler is nil")
 	}
 
 	// do the request
