@@ -1,4 +1,4 @@
-# RESTit [![CI test][ci-badge]][ci-url]
+# RESTit [![CI test][ci-badge]][ci-url] [![Appveyor test][appveyor-badge]][appveyor]
 
 A Go micro-framework to help writing RESTful API integration test
 
@@ -10,6 +10,8 @@ and yet easy to modify.
 
 [ci-url]: https://github.com/go-restit/restit/actions?query=branch%3Amain
 [ci-badge]: https://github.com/go-restit/restit/actions/workflows/ci.yml/badge.svg?branch=main
+[appveyor]: https://ci.appveyor.com/project/yookoala/restit?branch=main
+[appveyor-badge]: https://ci.appveyor.com/api/projects/status/github/go-restit/restit?branch=main&svg=true
 
 
 Versions
